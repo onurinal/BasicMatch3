@@ -25,57 +25,44 @@ namespace BasicMatch3.Manager
         {
             candyGrid = new Candy[levelProperties.GridHeight, levelProperties.GridWidth];
 
-            for (int height = 0; height < candyGrid.GetLength(0); height++)
+            for (int width = 0; width < candyGrid.GetLength(0); width++)
             {
-                for (int width = 0; width < candyGrid.GetLength(1); width++)
+                for (int height = 0; height < candyGrid.GetLength(1); height++)
                 {
-                    candyGrid[height, width] = CreateCandy(GetGridPosition(height, width));
+                    candyGrid[width, height] = CreateCandy(GetGridPosition(width, height));
                 }
             }
         }
 
-        private Vector2 GetGridPosition(int height, int width)
+        private Vector2 GetGridPosition(int width, int height)
         {
             float candyPositionX;
             float candyPositionY;
             if (levelProperties.GridWidth % 2 == 0)
             {
-                candyPositionX = CalculatePositionForEven(levelProperties.GridWidth, width);
-                candyPositionY = CalculatePositionForEven(levelProperties.GridHeight, height);
+                candyPositionX = CalculatePosition(levelProperties.GridWidth, width, true);
+                candyPositionY = CalculatePosition(levelProperties.GridHeight, height, true);
             }
             else
             {
-                candyPositionX = CalculatePositionForOdd(levelProperties.GridWidth, width);
-                candyPositionY = CalculatePositionForOdd(levelProperties.GridHeight, height);
+                candyPositionX = CalculatePosition(levelProperties.GridWidth, width, false);
+                candyPositionY = CalculatePosition(levelProperties.GridHeight, height, false);
             }
 
             return new Vector2(candyPositionX, candyPositionY);
         }
 
-        private float CalculatePositionForEven(int widthOrHeight, int point)
+        private float CalculatePosition(int gridWidthOrHeight, int point, bool isEven)
         {
-            float scaleFactorX = widthOrHeight / 2;
-
-            if (scaleFactorX <= point)
-            {
-                return (scaleFactorX - point) * -1 * scaleFactor + (scaleFactor / 2);
-            }
-            else
-            {
-                return (point - scaleFactorX) * scaleFactor + (scaleFactor / 2);
-            }
-        }
-
-        private float CalculatePositionForOdd(int widthOrHeight, int point)
-        {
-            float scaleFactorXY = widthOrHeight / 2;
+            float additionalForEven = isEven ? (scaleFactor / 2) : 0;
+            float scaleFactorXY = gridWidthOrHeight / 2;
             if (scaleFactorXY <= point)
             {
-                return (scaleFactorXY - point) * -1 * scaleFactor;
+                return (scaleFactorXY - point) * -1 * scaleFactor + additionalForEven;
             }
             else
             {
-                return (point - scaleFactorXY) * scaleFactor;
+                return (point - scaleFactorXY) * scaleFactor + additionalForEven;
             }
         }
 

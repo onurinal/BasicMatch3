@@ -325,6 +325,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 663607546}
+  - component: {fileID: 663607547}
   m_Layer: 0
   m_Name: GridChecker
   m_TagString: Untagged
@@ -347,6 +348,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &663607547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 663607545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2abbfbe1561a446aa1bf931f78dec7fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &699459831
 GameObject:
   m_ObjectHideFlags: 0
@@ -566,7 +579,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a4eb0cd68ac44c69465e14a6e2d3527, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridChecker: {fileID: 0}
+  gridChecker: {fileID: 663607547}
   levelProperties: {fileID: 11400000, guid: 5679112ffb2440549824597af69339d9, type: 2}
   candyPrefab: {fileID: 3348470098622948437, guid: 6de31296bcfc8804bb2c2bce2b596618, type: 3}
   candiesParent: {fileID: 1565468179}
