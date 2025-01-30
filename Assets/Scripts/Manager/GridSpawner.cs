@@ -6,6 +6,7 @@ namespace BasicMatch3.Manager
 {
     public class GridSpawner : MonoBehaviour
     {
+        [SerializeField] private Camera mainCamera;
         [SerializeField] private GridChecker gridChecker;
         [SerializeField] private LevelProperties levelProperties;
         [SerializeField] private Candy candyPrefab;
@@ -17,53 +18,28 @@ namespace BasicMatch3.Manager
 
         private void Start()
         {
+            UpdateCameraPosition();
             CreateNewGrid();
             gridChecker.Initialize(candyGrid);
         }
 
         private void CreateNewGrid()
         {
-            candyGrid = new Candy[levelProperties.GridHeight, levelProperties.GridWidth];
+            candyGrid = new Candy[levelProperties.GridWidth, levelProperties.GridHeight];
 
             for (int width = 0; width < candyGrid.GetLength(0); width++)
             {
                 for (int height = 0; height < candyGrid.GetLength(1); height++)
                 {
-                    candyGrid[width, height] = CreateCandy(GetGridPosition(width, height));
+                    var candyPosition = GetGridPosition(width, height);
+                    candyGrid[width, height] = CreateCandy(candyPosition);
                 }
             }
         }
 
         private Vector2 GetGridPosition(int width, int height)
         {
-            float candyPositionX;
-            float candyPositionY;
-            if (levelProperties.GridWidth % 2 == 0)
-            {
-                candyPositionX = CalculatePosition(levelProperties.GridWidth, width, true);
-                candyPositionY = CalculatePosition(levelProperties.GridHeight, height, true);
-            }
-            else
-            {
-                candyPositionX = CalculatePosition(levelProperties.GridWidth, width, false);
-                candyPositionY = CalculatePosition(levelProperties.GridHeight, height, false);
-            }
-
-            return new Vector2(candyPositionX, candyPositionY);
-        }
-
-        private float CalculatePosition(int gridWidthOrHeight, int point, bool isEven)
-        {
-            float additionalForEven = isEven ? (scaleFactor / 2) : 0;
-            float scaleFactorXY = gridWidthOrHeight / 2;
-            if (scaleFactorXY <= point)
-            {
-                return (scaleFactorXY - point) * -1 * scaleFactor + additionalForEven;
-            }
-            else
-            {
-                return (point - scaleFactorXY) * scaleFactor + additionalForEven;
-            }
+            return new Vector2(width * scaleFactor, height * scaleFactor);
         }
 
         private Candy CreateCandy(Vector2 position)
@@ -71,6 +47,26 @@ namespace BasicMatch3.Manager
             var candy = Instantiate(candyPrefab, position, Quaternion.identity);
             candy.transform.SetParent(candiesParent);
             return candy.Initialize();
+        }
+
+        private void UpdateCameraPosition()
+        {
+            float newCameraPositionX = CalculateCameraPosition(levelProperties.GridWidth);
+            float newCameraPositionY = CalculateCameraPosition(levelProperties.GridHeight);
+
+            mainCamera.transform.position = new Vector3(newCameraPositionX, newCameraPositionY, mainCamera.transform.position.z);
+        }
+
+        private float CalculateCameraPosition(int dimension)
+        {
+            if (dimension % 2 == 0)
+            {
+                return (dimension / 2 * scaleFactor) - (scaleFactor / 2);
+            }
+            else
+            {
+                return dimension / 2 * scaleFactor;
+            }
         }
     }
 }

@@ -467,6 +467,37 @@ Transform:
   - {fileID: 628561707}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1009911662
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1009911663}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1009911663
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1009911662}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1257446792
 GameObject:
   m_ObjectHideFlags: 0
@@ -579,6 +610,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a4eb0cd68ac44c69465e14a6e2d3527, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCamera: {fileID: 519420031}
   gridChecker: {fileID: 663607547}
   levelProperties: {fileID: 11400000, guid: 5679112ffb2440549824597af69339d9, type: 2}
   candyPrefab: {fileID: 3348470098622948437, guid: 6de31296bcfc8804bb2c2bce2b596618, type: 3}
@@ -624,3 +656,4 @@ SceneRoots:
   - {fileID: 1565468179}
   - {fileID: 1308900858}
   - {fileID: 663607546}
+  - {fileID: 1009911663}
