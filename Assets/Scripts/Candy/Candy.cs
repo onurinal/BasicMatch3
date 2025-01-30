@@ -7,8 +7,9 @@ namespace BasicMatch3.Candies
     {
         [SerializeField] private List<Sprite> candySprites;
         [field: SerializeField] public CandyType CandyType { get; private set; }
-        
-        public bool IsMatching { get;  set; }
+
+        [field: SerializeField] public bool IsMatching { get; set; } = false;
+        [field: SerializeField] public bool IsAlreadyMatched { get; set; } = false;
 
         public Candy Initialize()
         {

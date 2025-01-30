@@ -14,7 +14,7 @@ namespace BasicMatch3.Manager
 
         private Candy[,] candyGrid;
 
-        private readonly float scaleFactor = 0.45f;
+        private const float ScaleFactor = 0.45f;
 
         private void Start()
         {
@@ -39,7 +39,7 @@ namespace BasicMatch3.Manager
 
         private Vector2 GetGridPosition(int width, int height)
         {
-            return new Vector2(width * scaleFactor, height * scaleFactor);
+            return new Vector2(width * ScaleFactor, height * ScaleFactor);
         }
 
         private Candy CreateCandy(Vector2 position)
@@ -51,22 +51,16 @@ namespace BasicMatch3.Manager
 
         private void UpdateCameraPosition()
         {
-            float newCameraPositionX = CalculateCameraPosition(levelProperties.GridWidth);
-            float newCameraPositionY = CalculateCameraPosition(levelProperties.GridHeight);
+            var newCameraPositionX = CalculateCameraPosition(levelProperties.GridWidth);
+            var newCameraPositionY = CalculateCameraPosition(levelProperties.GridHeight);
 
             mainCamera.transform.position = new Vector3(newCameraPositionX, newCameraPositionY, mainCamera.transform.position.z);
         }
 
         private float CalculateCameraPosition(int dimension)
         {
-            if (dimension % 2 == 0)
-            {
-                return (dimension / 2 * scaleFactor) - (scaleFactor / 2);
-            }
-            else
-            {
-                return dimension / 2 * scaleFactor;
-            }
+            var additionalForEven = dimension % 2 == 0 ? (ScaleFactor / 2) : 0;
+            return (dimension / 2 * ScaleFactor) - additionalForEven;
         }
     }
 }
