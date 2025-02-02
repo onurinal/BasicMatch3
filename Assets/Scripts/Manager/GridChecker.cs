@@ -1,4 +1,5 @@
-﻿using BasicMatch3.Candies;
+﻿using System.Collections.Generic;
+using BasicMatch3.Candies;
 using UnityEngine;
 
 namespace BasicMatch3.Manager
@@ -6,6 +7,7 @@ namespace BasicMatch3.Manager
     public class GridChecker : MonoBehaviour
     {
         private Candy[,] candyGrid;
+        private List<Candy> matchedCandyList = new List<Candy>();
         private int matchCounter = 0;
 
         private void Start()
@@ -15,174 +17,99 @@ namespace BasicMatch3.Manager
         public void Initialize(Candy[,] candyGrid)
         {
             this.candyGrid = candyGrid;
-            CheckMatchForEveryCandy();
+            CheckAllCandies();
         }
 
-        private void IsMatch3ForHeight(int newWidth, int newHeight)
+        private void CheckCandiesIfMatch3(int newWidth, int newHeight, bool isCheckingWidth)
         {
-            candyGrid[newWidth, newHeight].IsMatching = true;
             matchCounter++;
 
-            for (int i = newHeight; i < candyGrid.GetLength(1); i++)
+            int iteration = isCheckingWidth ? newWidth : newHeight;
+
+            for (int i = iteration; i < candyGrid.GetLength(1); i++)
             {
+                // if iteration is for last two candies and didn't match yet then break the loop
                 if (i + 2 >= candyGrid.GetLength(1) && matchCounter <= 1)
                 {
-                    if (!candyGrid[newWidth, newHeight].IsAlreadyMatched)
-                    {
-                        candyGrid[newWidth, newHeight].IsMatching = false;
-                    }
-
                     matchCounter = 0;
                     break;
                 }
 
-                if (i + 1 >= candyGrid.GetLength(1))
+                if (i + 1 >= candyGrid.GetLength(1)) // to fix array boundary issue
                 {
-                    if (matchCounter >= 3)
+                    matchCounter = 0;
+                    break;
+                }
+
+                if (!isCheckingWidth)
+                {
+                    if (candyGrid[newWidth, newHeight].CandyType == candyGrid[newWidth, i + 1].CandyType)
+                    {
+                        matchCounter++;
+
+                        if (matchCounter > 3)
+                        {
+                            AddListCandiesIfMatched(newWidth, i + 1);
+                        }
+                        else if (matchCounter == 3)
+                        {
+                            AddListCandiesIfMatched(newWidth, newHeight);
+                            AddListCandiesIfMatched(newWidth, i);
+                            AddListCandiesIfMatched(newWidth, i + 1);
+                        }
+                    }
+                    else
                     {
                         matchCounter = 0;
                         break;
                     }
-
-                    if (matchCounter <= 2)
+                }
+                else
+                {
+                    if (candyGrid[newWidth, newHeight].CandyType == candyGrid[i + 1, newHeight].CandyType)
                     {
-                        if (!candyGrid[newWidth, i].IsAlreadyMatched)
+                        matchCounter++;
+
+                        if (matchCounter > 3)
                         {
-                            candyGrid[newWidth, i].IsMatching = false;
+                            AddListCandiesIfMatched(i + 1, newHeight);
                         }
-
-                        if (!candyGrid[newWidth, newHeight].IsAlreadyMatched)
+                        else if (matchCounter == 3)
                         {
-                            candyGrid[newWidth, newHeight].IsMatching = false;
+                            AddListCandiesIfMatched(newWidth, newHeight);
+                            AddListCandiesIfMatched(i, newHeight);
+                            AddListCandiesIfMatched(i + 1, newHeight);
                         }
                     }
-
-                    matchCounter = 0;
-                    break;
-                }
-
-                if (candyGrid[newWidth, newHeight].CandyType == candyGrid[newWidth, i + 1].CandyType)
-                {
-                    candyGrid[newWidth, i + 1].IsMatching = true;
-                    matchCounter++;
-                }
-                else if (matchCounter >= 3)
-                {
-                    matchCounter = 0;
-                    break;
-                }
-                else if (matchCounter <= 2)
-                {
-                    if (!candyGrid[newWidth, newHeight].IsAlreadyMatched)
-                    {
-                        candyGrid[newWidth, newHeight].IsMatching = false;
-                    }
-
-                    if (!candyGrid[newWidth, i].IsAlreadyMatched)
-                    {
-                        candyGrid[newWidth, i].IsMatching = false;
-                    }
-
-                    matchCounter = 0;
-                    break;
-                }
-            }
-        }
-
-        private void IsMatchForWidth(int newWidth, int newHeight)
-        {
-            candyGrid[newWidth, newHeight].IsMatching = true;
-            matchCounter++;
-
-            for (int i = newWidth; i < candyGrid.GetLength(0); i++)
-            {
-                if (i + 1 >= candyGrid.GetLength(0))
-                {
-                    if (matchCounter >= 3)
+                    else
                     {
                         matchCounter = 0;
                         break;
                     }
-
-                    if (matchCounter <= 2)
-                    {
-                        if (!candyGrid[i, newHeight].IsAlreadyMatched)
-                        {
-                            candyGrid[i, newHeight].IsMatching = false;
-                        }
-
-                        if (!candyGrid[newWidth, newHeight].IsAlreadyMatched)
-                        {
-                            candyGrid[newWidth, newHeight].IsMatching = false;
-                        }
-                    }
-
-                    matchCounter = 0;
-                    break;
-                }
-
-                if (candyGrid[newWidth, newHeight].CandyType == candyGrid[i + 1, newHeight].CandyType)
-                {
-                    candyGrid[i + 1, newHeight].IsMatching = true;
-                    matchCounter++;
-                }
-                else if (matchCounter >= 3)
-                {
-                    matchCounter = 0;
-                    break;
-                }
-                else if (matchCounter <= 2)
-                {
-                    if (!candyGrid[newWidth, newHeight].IsAlreadyMatched)
-                    {
-                        candyGrid[newWidth, newHeight].IsMatching = false;
-                    }
-
-                    if (!candyGrid[i, newHeight].IsAlreadyMatched)
-                    {
-                        candyGrid[i, newHeight].IsMatching = false;
-                    }
-
-                    matchCounter = 0;
-                    break;
                 }
             }
         }
 
-        private void CheckMatchForEveryCandy()
+        private void CheckAllCandies()
         {
             for (int width = 0; width < candyGrid.GetLength(0); width++)
             {
                 for (int height = 0; height < candyGrid.GetLength(1); height++)
                 {
-                    IsMatch3ForHeight(width, height);
-                    MarkCandiesIfMatchingForHeight(width, height);
-                    IsMatchForWidth(width, height);
-                    MarkCandiesIfMatchingForWidth(width, height);
+                    CheckCandiesIfMatch3(width, height, false);
+                    CheckCandiesIfMatch3(width, height, true);
                 }
             }
         }
 
-        private void MarkCandiesIfMatchingForHeight(int width, int height)
+        private void AddListCandiesIfMatched(int width, int height)
         {
-            for (int newHeight = height; newHeight < candyGrid.GetLength(1); newHeight++)
+            if (matchedCandyList.Contains(candyGrid[width, height]))
             {
-                if (candyGrid[width, newHeight].IsMatching)
-                {
-                    candyGrid[width, newHeight].IsAlreadyMatched = true;
-                }
+                return;
             }
-        }
 
-        private void MarkCandiesIfMatchingForWidth(int width, int height)
-        {
-            for (int newWidth = width; newWidth < candyGrid.GetLength(0); newWidth++)
-            {
-                if (candyGrid[newWidth, height].IsMatching)
-                {
-                    candyGrid[newWidth, height].IsAlreadyMatched = true;
-                }
-            }
+            matchedCandyList.Add(candyGrid[width, height]);
         }
     }
 }
