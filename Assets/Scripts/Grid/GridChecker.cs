@@ -8,6 +8,8 @@ namespace BasicMatch3.Grid
 {
     public class GridChecker
     {
+        private const int MatchThreshold = 3;
+
         private LevelProperties levelProperties;
         private CandyProperties candyProperties;
         private GridSpawner gridSpawner;
@@ -17,7 +19,6 @@ namespace BasicMatch3.Grid
         private int gridWidth;
         private int gridHeight;
         private int matchCounter;
-        private readonly int matchThreshold = 3;
 
         private IEnumerator candyMovementCoroutine;
         private IEnumerator scanGridCoroutine;
@@ -31,6 +32,7 @@ namespace BasicMatch3.Grid
 
             gridWidth = levelProperties.GridWidth;
             gridHeight = levelProperties.GridHeight;
+
             StartScanGrid();
         }
 
@@ -39,13 +41,12 @@ namespace BasicMatch3.Grid
             CheckAllCandies();
             do
             {
-                yield return new WaitForSeconds(candyProperties.FallDuration);
                 DestroyMatchedCandies();
-                ScanGridForEmptySlots();
+                FillCandyToEmptySlot();
+                CreateNewCandyForEmptySlot();
                 yield return new WaitForSeconds(candyProperties.FallDuration);
-                CreateCandyForEmptySlot();
+                yield return null;
                 CheckAllCandies();
-                yield return new WaitForSeconds(candyProperties.FallDuration);
             } while (matchedCandyList.Count > 0);
 
             yield return null;
@@ -95,13 +96,13 @@ namespace BasicMatch3.Grid
                 {
                     matchCounter++;
 
-                    if (matchCounter > matchThreshold)
+                    if (matchCounter > MatchThreshold)
                     {
                         AddListCandiesIfMatched(newWidth, i + 1);
                     }
-                    else if (matchCounter == matchThreshold)
+                    else if (matchCounter == MatchThreshold)
                     {
-                        for (int j = newHeight; j < newHeight + matchThreshold; j++)
+                        for (int j = newHeight; j < newHeight + MatchThreshold; j++)
                         {
                             AddListCandiesIfMatched(newWidth, j);
                         }
@@ -131,13 +132,13 @@ namespace BasicMatch3.Grid
                 {
                     matchCounter++;
 
-                    if (matchCounter > matchThreshold)
+                    if (matchCounter > MatchThreshold)
                     {
                         AddListCandiesIfMatched(i + 1, newHeight);
                     }
-                    else if (matchCounter == matchThreshold)
+                    else if (matchCounter == MatchThreshold)
                     {
-                        for (int j = newWidth; j < newWidth + matchThreshold; j++)
+                        for (int j = newWidth; j < newWidth + MatchThreshold; j++)
                         {
                             AddListCandiesIfMatched(j, newHeight);
                         }
@@ -161,7 +162,7 @@ namespace BasicMatch3.Grid
             matchedCandyList.Add(candyGrid[width, height]);
         }
 
-        private void ScanGridForEmptySlots()
+        private void FillCandyToEmptySlot()
         {
             for (int width = 0; width < gridWidth; width++)
             {
@@ -169,13 +170,24 @@ namespace BasicMatch3.Grid
                 {
                     if (candyGrid[width, height] == null)
                     {
-                        MoveCandyToEmptySlot(width, height);
+                        for (int i = height; i < gridHeight; i++)
+                        {
+                            if (candyGrid[width, i] != null)
+                            {
+                                candyGrid[width, height] = candyGrid[width, i];
+                                candyGrid[width, i].GridX = width;
+                                candyGrid[width, i].GridY = height;
+                                StartCandyMovement(candyGrid[width, i].transform, gridSpawner.GetGridPosition(width, height));
+                                candyGrid[width, i] = null;
+                                break;
+                            }
+                        }
                     }
                 }
             }
         }
 
-        private void CreateCandyForEmptySlot()
+        private void CreateNewCandyForEmptySlot()
         {
             for (int width = 0; width < gridWidth; width++)
             {
@@ -206,26 +218,10 @@ namespace BasicMatch3.Grid
         }
 
         // ------------------------------- CANDY MOVEMENT ------------------------
-        private void MoveCandyToEmptySlot(int width, int height)
-        {
-            for (int i = height; i < gridHeight; i++)
-            {
-                if (candyGrid[width, i] != null)
-                {
-                    candyGrid[width, height] = candyGrid[width, i];
-                    candyGrid[width, i].GridX = width;
-                    candyGrid[width, i].GridY = height;
-                    StartCandyMovement(candyGrid[width, i].transform, gridSpawner.GetGridPosition(width, height));
-                    candyGrid[width, i] = null;
-                    return;
-                }
-            }
-        }
-
         private IEnumerator StartCandyMovementCoroutine(Transform candyTransform, Vector3 targetPosition)
         {
             var elapsedTime = 0f;
-            while (elapsedTime < 1)
+            while (elapsedTime < candyProperties.FallDuration)
             {
                 candyTransform.position = Vector3.Lerp(candyTransform.position, targetPosition, elapsedTime / candyProperties.FallDuration);
                 elapsedTime += Time.deltaTime;
