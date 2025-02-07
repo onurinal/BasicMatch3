@@ -11,6 +11,7 @@ namespace BasicMatch3.Grid
         private GridChecker gridChecker;
         private Candy[,] candyGrid;
         private Transform candiesParent;
+        private int gridWidth, gridHeight;
 
         public void Initialize(CandyProperties candyProperties, LevelProperties levelProperties, GridChecker gridChecker, Transform candiesParent)
         {
@@ -18,14 +19,15 @@ namespace BasicMatch3.Grid
             this.gridChecker = gridChecker;
             this.candiesParent = candiesParent;
             this.levelProperties = levelProperties;
+            gridWidth = levelProperties.GridWidth;
+            gridHeight = levelProperties.GridHeight;
+
             CreateNewGrid();
-            gridChecker.Initialize(candyGrid, this, candyProperties, levelProperties);
+            gridChecker.Initialize(candyGrid, this, levelProperties);
         }
 
         private void CreateNewGrid()
         {
-            var gridWidth = levelProperties.GridWidth;
-            var gridHeight = levelProperties.GridHeight;
             candyGrid = new Candy[gridWidth, gridHeight];
 
             for (int width = 0; width < gridWidth; width++)
@@ -43,11 +45,31 @@ namespace BasicMatch3.Grid
             return new Vector2(width * candyProperties.ScaleFactor, height * candyProperties.ScaleFactor);
         }
 
-        public Candy CreateCandy(Vector2 position, int width, int height)
+        private Candy CreateCandy(Vector2 position, int width, int height)
         {
             var candy = Object.Instantiate(candyProperties.CandyPrefab, position, Quaternion.identity);
             candy.transform.SetParent(candiesParent);
             return candy.Initialize(width, height);
+        }
+
+        public void CreateNewCandyForEmptySlot()
+        {
+            for (int width = 0; width < gridWidth; width++)
+            {
+                for (int height = 0; height < gridHeight; height++)
+                {
+                    if (candyGrid[width, height] == null)
+                    {
+                        var position = GetGridPosition(width, gridHeight - 1);
+                        candyGrid[width, height] = CreateCandy(position, width, height);
+                        var targetPosition = GetGridPosition(width, height);
+                        candyGrid[width, height].StartCandyMovement(targetPosition);
+                        // StartCandyMovement(candyGrid[width, height].transform, targetPosition);
+                        // candyGrid[width, height].SetTargetPosition(targetPosition);
+                        // candyGrid[width, height].StartMoving();
+                    }
+                }
+            }
         }
     }
 }
