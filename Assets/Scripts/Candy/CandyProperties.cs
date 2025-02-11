@@ -8,9 +8,11 @@ namespace BasicMatch3.Candies
         [SerializeField] private Candy candyPrefab;
         [SerializeField] private float scaleFactor;
         [SerializeField] private float fallDuration;
+        [SerializeField] private float swapDuration;
 
         public Candy CandyPrefab => candyPrefab;
         public float ScaleFactor => scaleFactor;
         public float FallDuration => fallDuration;
+        public float SwapDuration => swapDuration;
     }
 }

@@ -122,6 +122,55 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &487205187
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 487205189}
+  - component: {fileID: 487205188}
+  m_Layer: 0
+  m_Name: Player Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &487205188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 487205187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bfa45df64f245dc98ab4a6d9fffd682, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerInput: {fileID: 11400000, guid: cdc2020985712014c90be5f978625308, type: 2}
+  candyLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  mainCamera: {fileID: 519420031}
+--- !u!4 &487205189
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 487205187}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -465,6 +514,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba7167f96ee448b38aafb3c9bcdff58d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerController: {fileID: 487205188}
   levelProperties: {fileID: 11400000, guid: 5679112ffb2440549824597af69339d9, type: 2}
   candyProperties: {fileID: 11400000, guid: 14b0754181cf4fe4c9e9754009f7e240, type: 2}
   cameraController: {fileID: 519420033}
@@ -667,4 +717,5 @@ SceneRoots:
   - {fileID: 895678641}
   - {fileID: 3487004904152645386}
   - {fileID: 1242954997}
+  - {fileID: 487205189}
   - {fileID: 1652889480}

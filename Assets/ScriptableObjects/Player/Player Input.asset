@@ -9,10 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0089e1a04a9c4cbba5abb0037135df8c, type: 3}
-  m_Name: Candy Properties
+  m_Script: {fileID: 11500000, guid: e4bd8798f28e49a1b75fb7fcb93fb4f9, type: 3}
+  m_Name: Player Input
   m_EditorClassIdentifier: 
-  candyPrefab: {fileID: 3348470098622948437, guid: 6de31296bcfc8804bb2c2bce2b596618, type: 3}
-  scaleFactor: 0.45
-  fallDuration: 0.15
-  swapDuration: 0.2

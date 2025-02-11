@@ -9,20 +9,23 @@ namespace BasicMatch3.Grid
     public class GridChecker
     {
         private LevelProperties levelProperties;
+        private CandyProperties candyProperties;
         private GridSpawner gridSpawner;
         private Candy[,] candyGrid;
         private int gridWidth;
         private int gridHeight;
         private int matchCounter;
 
+        private IEnumerator fillCandyToEmptySlotCoroutine;
         public List<Candy> MatchedCandyList { get; } = new List<Candy>();
         private const int MatchThreshold = 3;
 
-        public void Initialize(Candy[,] candyGrid, GridSpawner gridSpawner, LevelProperties levelProperties)
+        public void Initialize(Candy[,] candyGrid, GridSpawner gridSpawner, LevelProperties levelProperties, CandyProperties candyProperties)
         {
             this.candyGrid = candyGrid;
             this.gridSpawner = gridSpawner;
             this.levelProperties = levelProperties;
+            this.candyProperties = candyProperties;
 
             gridWidth = levelProperties.GridWidth;
             gridHeight = levelProperties.GridHeight;
@@ -122,7 +125,7 @@ namespace BasicMatch3.Grid
             MatchedCandyList.Add(candyGrid[width, height]);
         }
 
-        public void FillCandyToEmptySlot()
+        private IEnumerator FillCandyToEmptySlotCoroutine()
         {
             for (int width = 0; width < gridWidth; width++)
             {
@@ -134,20 +137,36 @@ namespace BasicMatch3.Grid
                         {
                             if (candyGrid[width, i] != null)
                             {
-                                candyGrid[width, height] = candyGrid[width, i];
                                 candyGrid[width, i].GridX = width;
                                 candyGrid[width, i].GridY = height;
-                                var targetPosition = gridSpawner.GetGridPosition(width, height);
-                                candyGrid[width, height].StartCandyMovement(targetPosition);
-                                // StartCandyMovement(candyGrid[width, i].transform, gridSpawner.GetGridPosition(width, height));
-                                // candyGrid[width, height].SetTargetPosition(gridSpawner.GetGridPosition(width, height));
-                                // candyGrid[width, height].StartMoving();
+                                candyGrid[width, height] = candyGrid[width, i];
+                                var startPosition = gridSpawner.GetCandyWorldPosition(width, i);
+                                var targetPosition = gridSpawner.GetCandyWorldPosition(width, height);
+                                candyGrid[width, height].StartMoving(startPosition, targetPosition, true);
                                 candyGrid[width, i] = null;
                                 break;
                             }
                         }
                     }
                 }
+            }
+
+            yield return new WaitForSeconds(candyProperties.FallDuration);
+        }
+
+        public IEnumerator StartFillCandyToEmptySlot()
+        {
+            StopFillCandyToEmptySlot();
+            fillCandyToEmptySlotCoroutine = FillCandyToEmptySlotCoroutine();
+            yield return CoroutineHandler.Instance.StartCoroutine(fillCandyToEmptySlotCoroutine);
+        }
+
+        public void StopFillCandyToEmptySlot()
+        {
+            if (fillCandyToEmptySlotCoroutine != null)
+            {
+                CoroutineHandler.Instance.StartCoroutine(fillCandyToEmptySlotCoroutine);
+                fillCandyToEmptySlotCoroutine = null;
             }
         }
 
@@ -162,6 +181,12 @@ namespace BasicMatch3.Grid
             }
 
             MatchedCandyList.Clear();
+        }
+
+        public int GetMatchedCandyCounts()
+        {
+            CheckAllCandies();
+            return MatchedCandyList.Count;
         }
     }
 }

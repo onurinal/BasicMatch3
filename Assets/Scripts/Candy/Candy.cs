@@ -18,9 +18,11 @@ namespace BasicMatch3.Candies
         [field: SerializeField] public int GridX { get; set; }
         [field: SerializeField] public int GridY { get; set; }
 
-        // public bool isMoving = false;
-        // private Vector3 targetPosition;
-        private IEnumerator candyMovementCoroutine;
+        private bool isFalling = false;
+        private bool isSwapping = false;
+        private Vector3 targetPosition;
+        private Vector3 startPosition;
+        private float elapsedTime = 0f;
 
         public Candy Initialize(int width, int height)
         {
@@ -32,68 +34,48 @@ namespace BasicMatch3.Candies
             return this;
         }
 
-        // private void Update()
-        // {
-        //     Move();
-        // }
-
-        // ------------------------------- CANDY MOVEMENT ------------------------
-        private IEnumerator StartCandyMovementCoroutine(Vector3 targetPosition)
+        private void Update()
         {
-            var elapsedTime = 0f;
-            while (elapsedTime < candyProperties.FallDuration)
+            Move();
+        }
+
+        public void StartMoving(Vector3 startPosition, Vector3 targetPosition, bool isFalling)
+        {
+            this.startPosition = startPosition;
+            this.targetPosition = targetPosition;
+            elapsedTime = 0f;
+            if (isFalling)
             {
-                transform.position = Vector3.Lerp(transform.position, targetPosition, elapsedTime / candyProperties.FallDuration);
+                this.isFalling = true;
+                isSwapping = false;
+            }
+            else
+            {
+                this.isFalling = false;
+                isSwapping = true;
+            }
+        }
+
+        private void Move()
+        {
+            if (!isFalling && !isSwapping)
+            {
+                return;
+            }
+
+            var duration = isFalling ? candyProperties.FallDuration : candyProperties.SwapDuration;
+
+            if (elapsedTime < duration)
+            {
+                transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / duration);
                 elapsedTime += Time.deltaTime;
-                yield return null;
             }
-
-            transform.position = targetPosition;
-        }
-
-        public void StartCandyMovement(Vector3 targetPosition)
-        {
-            candyMovementCoroutine = StartCandyMovementCoroutine(targetPosition);
-            CoroutineHandler.Instance.StartCoroutine(candyMovementCoroutine);
-        }
-
-        public void StopCandyMovement()
-        {
-            if (candyMovementCoroutine != null)
+            else
             {
-                CoroutineHandler.Instance.StopCoroutine(candyMovementCoroutine);
-                candyMovementCoroutine = null;
+                transform.position = targetPosition;
+                isFalling = false;
+                isSwapping = false;
             }
         }
-
-        // TESTING
-
-        // public void StartMoving()
-        // {
-        //     isMoving = true;
-        // }
-        //
-        // private void Move()
-        // {
-        //     if (!isMoving)
-        //     {
-        //         return;
-        //     }
-        //
-        //     var elapsedTime = 0f;
-        //     while (elapsedTime < candyProperties.FallDuration)
-        //     {
-        //         transform.position = Vector3.Lerp(transform.position, targetPosition, elapsedTime / candyProperties.FallDuration);
-        //         elapsedTime += Time.deltaTime;
-        //     }
-        //
-        //     transform.position = targetPosition;
-        //     isMoving = false;
-        // }
-        //
-        // public void SetTargetPosition(Vector3 targetPosition)
-        // {
-        //     this.targetPosition = targetPosition;
-        // }
     }
 }
