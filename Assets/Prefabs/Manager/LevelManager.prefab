@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3815472110493423001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7527204728590935865}
+  - component: {fileID: 8191323574930087125}
+  m_Layer: 0
+  m_Name: LevelManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7527204728590935865
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3815472110493423001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8191323574930087125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3815472110493423001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba7167f96ee448b38aafb3c9bcdff58d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneLoader: {fileID: 0}
+  playerController: {fileID: 0}
+  candyProperties: {fileID: 11400000, guid: 14b0754181cf4fe4c9e9754009f7e240, type: 2}
+  cameraController: {fileID: 0}
+  candiesParent: {fileID: 0}
+  levelPropertiesList:
+  - {fileID: 11400000, guid: 5679112ffb2440549824597af69339d9, type: 2}
+  - {fileID: 11400000, guid: b4768bd4daddad246af8318969e1ae6e, type: 2}
+  - {fileID: 11400000, guid: 1b72a365475a0954593f38150628b7c2, type: 2}
+  - {fileID: 11400000, guid: d21fa113fb85d584f996ab69d09fa4d9, type: 2}
+  - {fileID: 11400000, guid: 9fb347266d102704f89e62c414bed707, type: 2}

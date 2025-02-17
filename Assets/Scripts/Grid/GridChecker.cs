@@ -125,7 +125,7 @@ namespace BasicMatch3.Grid
             MatchedCandyList.Add(candyGrid[width, height]);
         }
 
-        private IEnumerator FillCandyToEmptySlotCoroutine()
+        private IEnumerator FillCandyToEmptySlotCoroutine(float moveDuration)
         {
             for (int width = 0; width < gridWidth; width++)
             {
@@ -142,7 +142,7 @@ namespace BasicMatch3.Grid
                                 candyGrid[width, height] = candyGrid[width, i];
                                 var startPosition = gridSpawner.GetCandyWorldPosition(width, i);
                                 var targetPosition = gridSpawner.GetCandyWorldPosition(width, height);
-                                candyGrid[width, height].StartMoving(startPosition, targetPosition, true);
+                                candyGrid[width, height].StartMoving(startPosition, targetPosition);
                                 candyGrid[width, i] = null;
                                 break;
                             }
@@ -151,13 +151,14 @@ namespace BasicMatch3.Grid
                 }
             }
 
-            yield return new WaitForSeconds(candyProperties.FallDuration);
+            yield return new WaitForSeconds(moveDuration);
+            fillCandyToEmptySlotCoroutine = null;
         }
 
-        public IEnumerator StartFillCandyToEmptySlot()
+        public IEnumerator StartFillCandyToEmptySlot(float moveDuration)
         {
-            StopFillCandyToEmptySlot();
-            fillCandyToEmptySlotCoroutine = FillCandyToEmptySlotCoroutine();
+            // StopFillCandyToEmptySlot();
+            fillCandyToEmptySlotCoroutine = FillCandyToEmptySlotCoroutine(moveDuration);
             yield return CoroutineHandler.Instance.StartCoroutine(fillCandyToEmptySlotCoroutine);
         }
 

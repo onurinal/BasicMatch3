@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using BasicMatch3.Manager;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -12,11 +13,9 @@ namespace BasicMatch3.Candies
         [SerializeField] private List<Sprite> candySpriteList;
         [SerializeField] private SpriteRenderer candySprite;
         [field: SerializeField] public CandyType CandyType { get; private set; }
-
-        [field: SerializeField] public bool IsMatching { get; set; } = false;
-
         [field: SerializeField] public int GridX { get; set; }
         [field: SerializeField] public int GridY { get; set; }
+        public SpriteRenderer CandySprite => candySprite;
 
         private bool isFalling = false;
         private bool isSwapping = false;
@@ -24,13 +23,19 @@ namespace BasicMatch3.Candies
         private Vector3 startPosition;
         private float elapsedTime = 0f;
 
-        public Candy Initialize(int width, int height)
+        public Candy Initialize(int width, int height, LevelManager levelManager)
         {
-            var candyNumber = Random.Range(0, candySpriteList.Count);
+            var candyNumber = Random.Range(0, candySpriteList.Count - 2);
             candySprite.sprite = candySpriteList[candyNumber];
             CandyType = (CandyType)candyNumber;
             GridX = width;
             GridY = height;
+
+            if (levelManager.IsGridInitializing)
+            {
+                candySprite.enabled = false;
+            }
+
             return this;
         }
 
@@ -39,21 +44,22 @@ namespace BasicMatch3.Candies
             Move();
         }
 
-        public void StartMoving(Vector3 startPosition, Vector3 targetPosition, bool isFalling)
+        public void StartMoving(Vector3 startPosition, Vector3 targetPosition)
         {
             this.startPosition = startPosition;
             this.targetPosition = targetPosition;
             elapsedTime = 0f;
-            if (isFalling)
-            {
-                this.isFalling = true;
-                isSwapping = false;
-            }
-            else
-            {
-                this.isFalling = false;
-                isSwapping = true;
-            }
+            isSwapping = false;
+            isFalling = true;
+        }
+
+        public void StartSwapping(Vector3 startPosition, Vector3 targetPosition)
+        {
+            this.startPosition = startPosition;
+            this.targetPosition = targetPosition;
+            elapsedTime = 0f;
+            isFalling = false;
+            isSwapping = true;
         }
 
         private void Move()
@@ -63,11 +69,9 @@ namespace BasicMatch3.Candies
                 return;
             }
 
-            var duration = isFalling ? candyProperties.FallDuration : candyProperties.SwapDuration;
-
-            if (elapsedTime < duration)
+            if (elapsedTime < candyProperties.MoveDuration)
             {
-                transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / duration);
+                transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / candyProperties.MoveDuration);
                 elapsedTime += Time.deltaTime;
             }
             else
