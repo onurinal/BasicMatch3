@@ -6,10 +6,17 @@ namespace BasicMatch3.Candies
     public class CandyProperties : ScriptableObject
     {
         [SerializeField] private Candy candyPrefab;
+        [SerializeField] private Candy bombCandyPrefab;
+        [SerializeField] private Candy rainbowCandyPrefab;
         [SerializeField] private float scaleFactor;
         [SerializeField] private float moveDuration;
 
+        // check these properties, is it private set or only public get available?
         public Candy CandyPrefab => candyPrefab;
+
+        public Candy BombCandyPrefab => bombCandyPrefab;
+
+        public Candy RainbowCandyPrefab => rainbowCandyPrefab;
         public float ScaleFactor => scaleFactor;
         public float MoveDuration => moveDuration;
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using BasicMatch3.Candies;
 using BasicMatch3.Level;
+using BasicMatch3.Manager;
 using UnityEngine;
 
 namespace BasicMatch3.Grid
@@ -10,22 +11,24 @@ namespace BasicMatch3.Grid
     {
         private LevelProperties levelProperties;
         private CandyProperties candyProperties;
+        private LevelManager levelManager;
         private GridSpawner gridSpawner;
         private Candy[,] candyGrid;
         private int gridWidth;
         private int gridHeight;
-        private int matchCounter;
 
         private IEnumerator fillCandyToEmptySlotCoroutine;
         public List<Candy> MatchedCandyList { get; } = new List<Candy>();
         private const int MatchThreshold = 3;
 
-        public void Initialize(Candy[,] candyGrid, GridSpawner gridSpawner, LevelProperties levelProperties, CandyProperties candyProperties)
+        public void Initialize(Candy[,] candyGrid, GridSpawner gridSpawner, LevelProperties levelProperties, CandyProperties candyProperties,
+            LevelManager levelManager)
         {
             this.candyGrid = candyGrid;
             this.gridSpawner = gridSpawner;
             this.levelProperties = levelProperties;
             this.candyProperties = candyProperties;
+            this.levelManager = levelManager;
 
             gridWidth = levelProperties.GridWidth;
             gridHeight = levelProperties.GridHeight;
@@ -43,79 +46,167 @@ namespace BasicMatch3.Grid
             }
         }
 
-        private void CheckCandiesForHeight(int newWidth, int newHeight)
+        private void CheckCandiesForHeight(int width, int height)
         {
-            matchCounter++;
+            int matchCounter = 1;
+            int firstHeight = height;
 
-            for (int i = newHeight; i < gridHeight; i++)
+            for (int i = height; i < gridHeight; i++)
             {
                 if (i + 1 >= gridHeight) // to fix array boundary issue
                 {
-                    matchCounter = 0;
                     break;
                 }
 
-                if (candyGrid[newWidth, newHeight].CandyType == candyGrid[newWidth, i + 1].CandyType)
+                if (IsCandyRainbowForHeight(width, i))
+                {
+                    break;
+                }
+
+                if (candyGrid[width, height].CandyType == CandyType.Bomb)
+                {
+                    matchCounter++;
+                    height++;
+                    if (matchCounter == MatchThreshold)
+                    {
+                        for (int j = firstHeight; j < firstHeight + MatchThreshold; j++)
+                        {
+                            AddCandiesMatchedList(width, j);
+                        }
+                    }
+
+                    continue;
+                }
+
+                if (candyGrid[width, i + 1].CandyType == CandyType.Bomb)
                 {
                     matchCounter++;
 
                     if (matchCounter > MatchThreshold)
                     {
-                        AddListCandiesIfMatched(newWidth, i + 1);
+                        AddCandiesMatchedList(width, i + 1);
+                    }
+
+                    if (matchCounter == MatchThreshold)
+                    {
+                        for (int j = firstHeight; j < firstHeight + MatchThreshold; j++)
+                        {
+                            AddCandiesMatchedList(width, j);
+                        }
+                    }
+
+                    continue;
+                }
+
+                if (candyGrid[width, height].CandyType == candyGrid[width, i + 1].CandyType)
+                {
+                    matchCounter++;
+
+                    if (matchCounter > MatchThreshold)
+                    {
+                        AddCandiesMatchedList(width, i + 1);
                     }
                     else if (matchCounter == MatchThreshold)
                     {
-                        for (int j = newHeight; j < newHeight + MatchThreshold; j++)
+                        for (int j = firstHeight; j < firstHeight + MatchThreshold; j++)
                         {
-                            AddListCandiesIfMatched(newWidth, j);
+                            AddCandiesMatchedList(width, j);
                         }
                     }
                 }
                 else
                 {
-                    matchCounter = 0;
                     break;
                 }
             }
         }
 
-        private void CheckCandiesForWidth(int newWidth, int newHeight)
+        private void CheckCandiesForWidth(int width, int height)
         {
-            matchCounter++;
+            int matchCounter = 1;
+            int firstWidth = width;
 
-            for (int i = newWidth; i < gridWidth; i++)
+            for (int i = width; i < gridWidth; i++)
             {
                 if (i + 1 >= gridWidth) // to fix array boundary issue
                 {
-                    matchCounter = 0;
                     break;
                 }
 
-                if (candyGrid[newWidth, newHeight].CandyType == candyGrid[i + 1, newHeight].CandyType)
+                if (IsCandyRainbowForWidth(i, height))
+                {
+                    break;
+                }
+
+                if (candyGrid[width, height].CandyType == CandyType.Bomb)
+                {
+                    matchCounter++;
+                    width++;
+                    if (matchCounter == MatchThreshold)
+                    {
+                        for (int j = firstWidth; j < firstWidth + MatchThreshold; j++)
+                        {
+                            AddCandiesMatchedList(j, height);
+                        }
+                    }
+
+                    continue;
+                }
+
+                if (candyGrid[i + 1, height].CandyType == CandyType.Bomb)
                 {
                     matchCounter++;
 
                     if (matchCounter > MatchThreshold)
                     {
-                        AddListCandiesIfMatched(i + 1, newHeight);
+                        AddCandiesMatchedList(i + 1, height);
+                    }
+
+                    if (matchCounter == MatchThreshold)
+                    {
+                        for (int j = firstWidth; j < firstWidth + MatchThreshold; j++)
+                        {
+                            AddCandiesMatchedList(j, height);
+                        }
+                    }
+
+                    continue;
+                }
+
+                if (candyGrid[width, height].CandyType == candyGrid[i + 1, height].CandyType)
+                {
+                    matchCounter++;
+
+                    if (matchCounter > MatchThreshold)
+                    {
+                        AddCandiesMatchedList(i + 1, height);
                     }
                     else if (matchCounter == MatchThreshold)
                     {
-                        for (int j = newWidth; j < newWidth + MatchThreshold; j++)
+                        for (int j = firstWidth; j < firstWidth + MatchThreshold; j++)
                         {
-                            AddListCandiesIfMatched(j, newHeight);
+                            AddCandiesMatchedList(j, height);
                         }
                     }
                 }
                 else
                 {
-                    matchCounter = 0;
                     break;
                 }
             }
         }
 
-        private void AddListCandiesIfMatched(int width, int height)
+        private bool IsCandyRainbowForHeight(int width, int height)
+        {
+            return candyGrid[width, height].CandyType == CandyType.Rainbow || candyGrid[width, height + 1].CandyType == CandyType.Rainbow;
+        }
+
+        private bool IsCandyRainbowForWidth(int width, int height)
+        {
+            return candyGrid[width, height].CandyType == CandyType.Rainbow || candyGrid[width + 1, height].CandyType == CandyType.Rainbow;
+        }
+
+        private void AddCandiesMatchedList(int width, int height)
         {
             if (MatchedCandyList.Contains(candyGrid[width, height]))
             {
@@ -125,63 +216,80 @@ namespace BasicMatch3.Grid
             MatchedCandyList.Add(candyGrid[width, height]);
         }
 
-        private IEnumerator FillCandyToEmptySlotCoroutine(float moveDuration)
-        {
-            for (int width = 0; width < gridWidth; width++)
-            {
-                for (int height = 0; height < gridHeight; height++)
-                {
-                    if (candyGrid[width, height] == null)
-                    {
-                        for (int i = height; i < gridHeight; i++)
-                        {
-                            if (candyGrid[width, i] != null)
-                            {
-                                candyGrid[width, i].GridX = width;
-                                candyGrid[width, i].GridY = height;
-                                candyGrid[width, height] = candyGrid[width, i];
-                                var startPosition = gridSpawner.GetCandyWorldPosition(width, i);
-                                var targetPosition = gridSpawner.GetCandyWorldPosition(width, height);
-                                candyGrid[width, height].StartMoving(startPosition, targetPosition);
-                                candyGrid[width, i] = null;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            yield return new WaitForSeconds(moveDuration);
-            fillCandyToEmptySlotCoroutine = null;
-        }
-
-        public IEnumerator StartFillCandyToEmptySlot(float moveDuration)
-        {
-            // StopFillCandyToEmptySlot();
-            fillCandyToEmptySlotCoroutine = FillCandyToEmptySlotCoroutine(moveDuration);
-            yield return CoroutineHandler.Instance.StartCoroutine(fillCandyToEmptySlotCoroutine);
-        }
-
-        public void StopFillCandyToEmptySlot()
-        {
-            if (fillCandyToEmptySlotCoroutine != null)
-            {
-                CoroutineHandler.Instance.StartCoroutine(fillCandyToEmptySlotCoroutine);
-                fillCandyToEmptySlotCoroutine = null;
-            }
-        }
-
         public void DestroyMatchedCandies()
         {
-            foreach (Candy candy in MatchedCandyList)
+            if (MatchedCandyList != null)
             {
-                var width = candy.GridX;
-                var height = candy.GridY;
-                Object.Destroy(candy.gameObject);
+                if (!levelManager.IsGridInitializing)
+                {
+                    CheckAndCreateSpecialCandy();
+                }
+                else
+                {
+                    foreach (Candy candy in MatchedCandyList)
+                    {
+                        var width = candy.GridX;
+                        var height = candy.GridY;
+                        Object.Destroy(candy.gameObject);
+                        candyGrid[width, height] = null;
+                    }
+                }
+
+                MatchedCandyList.Clear();
+            }
+        }
+
+        private void CheckAndCreateSpecialCandy()
+        {
+            var counter = 1;
+            for (int i = 0; i < MatchedCandyList.Count; i++)
+            {
+                var width = MatchedCandyList[i].GridX;
+                var height = MatchedCandyList[i].GridY;
+                var candyPosition = gridSpawner.GetCandyWorldPosition(MatchedCandyList[i].GridX, MatchedCandyList[i].GridY);
+
+                if (i + 1 < MatchedCandyList.Count)
+                {
+                    if (MatchedCandyList[i].CandyType == MatchedCandyList[i + 1].CandyType)
+                    {
+                        counter++;
+                        if (counter == MatchThreshold + 1)
+                        {
+                            if (i + 2 < MatchedCandyList.Count)
+                            {
+                                if (MatchedCandyList[i].CandyType == MatchedCandyList[i + 2].CandyType)
+                                {
+                                    counter++;
+                                    if (counter == MatchThreshold + 2)
+                                    {
+                                        DestroyAndCreateSpecialCandy(i, width, height, candyPosition, candyProperties.BombCandyPrefab);
+                                        counter = 1;
+                                        continue;
+                                    }
+                                }
+                            }
+
+                            DestroyAndCreateSpecialCandy(i, width, height, candyPosition, candyProperties.BombCandyPrefab);
+                            counter = 1;
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        counter = 1; // reset the counter
+                    }
+                }
+
+                Object.Destroy(MatchedCandyList[i].gameObject);
                 candyGrid[width, height] = null;
             }
+        }
 
-            MatchedCandyList.Clear();
+        private void DestroyAndCreateSpecialCandy(int i, int width, int height, Vector2 candyPosition, Candy specialCandyPrefab)
+        {
+            Object.Destroy(MatchedCandyList[i].gameObject);
+            candyGrid[width, height] = null;
+            gridSpawner.CreateCandy(candyPosition, width, height, specialCandyPrefab);
         }
 
         public int GetMatchedCandyCounts()

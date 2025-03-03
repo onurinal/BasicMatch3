@@ -22,6 +22,8 @@ namespace BasicMatch3.Grid
         private IEnumerator createNewCandiesCoroutine;
         private IEnumerator createNewGridCoroutine;
 
+        private ManualGrid manualGrid; // REMOVE OR DISABLE AFTER TESTING FEATURES
+
         public void Initialize(LevelManager levelManager, GridChecker gridChecker, GridMovement gridMovement, CandyProperties candyProperties,
             LevelProperties levelProperties, Transform candiesParent)
         {
@@ -35,20 +37,37 @@ namespace BasicMatch3.Grid
             gridHeight = levelProperties.GridHeight;
 
             CreateNewGrid();
-            gridChecker.Initialize(candyGrid, this, levelProperties, candyProperties);
-            gridMovement.Initialize(candyGrid, levelManager, gridChecker, candyProperties);
+
+            // REMOVE OR DISABLE AFTER TESTING FEATURES
+            manualGrid = new ManualGrid();
+            manualGrid.Initialize(candyGrid, this, candyProperties, levelManager, candiesParent);
+
+            if (manualGrid.IsManualGrid)
+            {
+                manualGrid.CreateNewCandies();
+            }
+            else
+            {
+                CreateCandiesToGrid();
+            }
+
+            gridChecker.Initialize(candyGrid, this, levelProperties, candyProperties, levelManager);
+            gridMovement.Initialize(candyGrid, levelManager, this, gridChecker, candyProperties, levelProperties);
         }
 
         private void CreateNewGrid()
         {
             candyGrid = new Candy[gridWidth, gridHeight];
+        }
 
+        private void CreateCandiesToGrid()
+        {
             for (int width = 0; width < gridWidth; width++)
             {
                 for (int height = 0; height < gridHeight; height++)
                 {
                     var candyPosition = GetCandyWorldPosition(width, height);
-                    candyGrid[width, height] = CreateCandy(candyPosition, width, height);
+                    CreateCandy(candyPosition, width, height, candyProperties.CandyPrefab);
                 }
             }
         }
@@ -63,11 +82,11 @@ namespace BasicMatch3.Grid
             return candyGrid[width, height];
         }
 
-        private Candy CreateCandy(Vector2 position, int width, int height)
+        public void CreateCandy(Vector2 position, int width, int height, Candy candyPrefab)
         {
-            var candy = Object.Instantiate(candyProperties.CandyPrefab, position, Quaternion.identity);
+            var candy = Object.Instantiate(candyPrefab, position, Quaternion.identity);
             candy.transform.SetParent(candiesParent);
-            return candy.Initialize(width, height, levelManager);
+            candyGrid[width, height] = candy.Initialize(width, height, levelManager);
         }
 
         private IEnumerator CreateNewCandyForEmptySlotCoroutine(float spawnGapBetweenCandies)
@@ -82,7 +101,7 @@ namespace BasicMatch3.Grid
                         {
                             var startPosition = GetCandyWorldPosition(width, gridHeight - 1);
                             var targetPosition = GetCandyWorldPosition(width, j);
-                            candyGrid[width, j] = CreateCandy(startPosition, width, j);
+                            CreateCandy(startPosition, width, j, candyProperties.CandyPrefab);
                             candyGrid[width, j].StartMoving(startPosition, targetPosition);
                             break;
                         }
@@ -111,21 +130,7 @@ namespace BasicMatch3.Grid
             }
         }
 
-        public void MoveAllCandiesToTheTop()
-        {
-            for (int height = 0; height < gridHeight; height++)
-            {
-                for (int width = 0; width < gridWidth; width++)
-                {
-                    // candyGrid[width, height].transform.position = GetCandyWorldPosition(width, gridHeight - 1);
-                    var startPosition = GetCandyWorldPosition(width, height);
-                    var targetPosition = GetCandyWorldPosition(width, gridHeight - 1);
-                    candyGrid[width, height].StartMoving(startPosition, targetPosition);
-                }
-            }
-        }
-
-        private IEnumerator CreateNewGridCoroutine(float spawnGapBetweenCandies)
+        private IEnumerator FallCandiesAtStart(float spawnGapBetweenCandies)
         {
             // make the candies start falling at the top of the grid
             for (int height = 0; height < gridHeight; height++)
@@ -150,7 +155,7 @@ namespace BasicMatch3.Grid
                 yield break;
             }
 
-            createNewGridCoroutine = CreateNewGridCoroutine(spawnGapBetweenCandies);
+            createNewGridCoroutine = FallCandiesAtStart(spawnGapBetweenCandies);
             yield return CoroutineHandler.Instance.StartCoroutine(createNewGridCoroutine);
         }
 
@@ -169,7 +174,10 @@ namespace BasicMatch3.Grid
             {
                 for (int height = 0; height < gridHeight; height++)
                 {
-                    candyGrid[width, height].CandySprite.enabled = true;
+                    if (candyGrid[width, height] != null)
+                    {
+                        candyGrid[width, height].CandySprite.enabled = true;
+                    }
                 }
             }
         }

@@ -6,6 +6,8 @@
         IceCream,
         Biscuit,
         Donut,
-        Chocolate
+        Chocolate,
+        Bomb,
+        Rainbow
     }
 }

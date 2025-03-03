@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using BasicMatch3.Manager;
 using UnityEngine;
@@ -25,15 +24,61 @@ namespace BasicMatch3.Candies
 
         public Candy Initialize(int width, int height, LevelManager levelManager)
         {
-            var candyNumber = Random.Range(0, candySpriteList.Count - 2);
-            candySprite.sprite = candySpriteList[candyNumber];
-            CandyType = (CandyType)candyNumber;
+            if (CandyType != CandyType.Bomb && CandyType != CandyType.Rainbow)
+            {
+                var candyNumber = Random.Range(0, candySpriteList.Count - 1);
+                candySprite.sprite = candySpriteList[candyNumber];
+                CandyType = (CandyType)candyNumber;
+            }
+
             GridX = width;
             GridY = height;
 
             if (levelManager.IsGridInitializing)
             {
                 candySprite.enabled = false;
+            }
+
+            return this;
+        }
+
+        // REMOVE OR DISABLE AFTER TESTING FEATURES
+        public Candy InitializeForTest(int width, int height, LevelManager levelManager, CandyType candyType)
+        {
+            if (CandyType != CandyType.Bomb && CandyType != CandyType.Rainbow)
+            {
+                switch (candyType)
+                {
+                    case CandyType.Pasta:
+                        candySprite.sprite = candySpriteList[0];
+                        CandyType = candyType;
+                        break;
+                    case CandyType.IceCream:
+                        candySprite.sprite = candySpriteList[1];
+                        CandyType = candyType;
+                        break;
+                    case CandyType.Biscuit:
+                        candySprite.sprite = candySpriteList[2];
+                        CandyType = candyType;
+                        break;
+                    case CandyType.Donut:
+                        candySprite.sprite = candySpriteList[3];
+                        CandyType = candyType;
+                        break;
+                    case CandyType.Chocolate:
+                        candySprite.sprite = candySpriteList[4];
+                        CandyType = candyType;
+                        break;
+                }
+            }
+
+            CandyType = candyType;
+            GridX = width;
+            GridY = height;
+
+            if (levelManager.IsGridInitializing)
+            {
+                candySprite.enabled = true;
             }
 
             return this;
@@ -80,6 +125,13 @@ namespace BasicMatch3.Candies
                 isFalling = false;
                 isSwapping = false;
             }
+        }
+
+        public void MoveToTop(Vector3 targetPosition)
+        {
+            isSwapping = false;
+            isFalling = false;
+            transform.position = targetPosition;
         }
     }
 }

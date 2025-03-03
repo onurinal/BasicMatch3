@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BasicMatch3.CameraManager;
@@ -31,6 +32,15 @@ namespace BasicMatch3.Manager
         [SerializeField] private List<LevelProperties> levelPropertiesList;
         private LevelProperties currentLevelProperties;
         private readonly Dictionary<int, LevelProperties> levelPropertiesDictionary = new Dictionary<int, LevelProperties>();
+
+        private void OnDestroy()
+        {
+            if (CoroutineHandler.Instance != null)
+            {
+                StopNewLevel();
+                StopScanGrid();
+            }
+        }
 
         public void Initialize(PlayerPrefController playerPrefController)
         {
@@ -73,11 +83,11 @@ namespace BasicMatch3.Manager
         {
             var duration = IsGridInitializing ? 0f : candyProperties.MoveDuration;
 
-            gridChecker.CheckAllCandies();
             do
             {
+                // yield return new WaitForSeconds(2f);
                 gridChecker.DestroyMatchedCandies();
-                yield return gridChecker.StartFillCandyToEmptySlot(duration);
+                yield return gridMovement.StartFillCandyToEmptySlot(duration);
                 yield return gridSpawner.StartCreateNewCandies(duration / 3f);
                 gridChecker.CheckAllCandies();
                 yield return null;
@@ -103,8 +113,7 @@ namespace BasicMatch3.Manager
         private IEnumerator NewLevelCoroutine()
         {
             yield return CoroutineHandler.Instance.StartCoroutine(StartScanGrid());
-            gridSpawner.MoveAllCandiesToTheTop();
-            yield return new WaitForSeconds(candyProperties.MoveDuration);
+            gridMovement.MoveAllCandiesToTheTop();
             IsGridInitializing = false;
             gridSpawner.ShowAllCandies();
             yield return gridSpawner.StartCreateNewGrid(candyProperties.MoveDuration / 1.5f);
