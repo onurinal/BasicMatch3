@@ -85,8 +85,9 @@ namespace BasicMatch3.Manager
 
             do
             {
-                // yield return new WaitForSeconds(2f);
+                gridChecker.CheckAllCandies();
                 gridChecker.DestroyMatchedCandies();
+                yield return new WaitForSeconds(0.5f);
                 yield return gridMovement.StartFillCandyToEmptySlot(duration);
                 yield return gridSpawner.StartCreateNewCandies(duration / 3f);
                 gridChecker.CheckAllCandies();
@@ -114,11 +115,21 @@ namespace BasicMatch3.Manager
         {
             yield return CoroutineHandler.Instance.StartCoroutine(StartScanGrid());
             gridMovement.MoveAllCandiesToTheTop();
-            IsGridInitializing = false;
             gridSpawner.ShowAllCandies();
             yield return gridSpawner.StartCreateNewGrid(candyProperties.MoveDuration / 1.5f);
+            IsGridInitializing = false;
             newLevelCoroutine = null;
         }
+
+        // THIS IS FOR MANUAL GRID - TESTING - DISABLE IT IF NOT USING
+        // private IEnumerator NewLevelCoroutine()
+        // {
+        //     IsGridInitializing = false;
+        //     yield return CoroutineHandler.Instance.StartCoroutine(StartScanGrid());
+        //     yield return new WaitForSeconds(candyProperties.MoveDuration);
+        //     // yield return gridSpawner.StartCreateNewGrid(candyProperties.MoveDuration / 1.5f);
+        //     newLevelCoroutine = null;
+        // }
 
         private void StartNewLevel()
         {

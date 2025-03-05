@@ -58,6 +58,11 @@ namespace BasicMatch3.Grid
                     break;
                 }
 
+                if (candyGrid[width, height] == null || candyGrid[width, i + 1] == null)
+                {
+                    break;
+                }
+
                 if (IsCandyRainbowForHeight(width, i))
                 {
                     break;
@@ -133,6 +138,11 @@ namespace BasicMatch3.Grid
                     break;
                 }
 
+                if (candyGrid[width, height] == null || candyGrid[i + 1, height] == null)
+                {
+                    break;
+                }
+
                 if (IsCandyRainbowForWidth(i, height))
                 {
                     break;
@@ -203,7 +213,13 @@ namespace BasicMatch3.Grid
 
         private bool IsCandyRainbowForWidth(int width, int height)
         {
-            return candyGrid[width, height].CandyType == CandyType.Rainbow || candyGrid[width + 1, height].CandyType == CandyType.Rainbow;
+            if (candyGrid[width, height] != null && candyGrid[width + 1, height] != null)
+            {
+                return candyGrid[width, height].CandyType == CandyType.Rainbow || candyGrid[width + 1, height].CandyType == CandyType.Rainbow;
+            }
+
+            return false;
+            // return candyGrid[width, height].CandyType == CandyType.Rainbow || candyGrid[width + 1, height].CandyType == CandyType.Rainbow;
         }
 
         private void AddCandiesMatchedList(int width, int height)
@@ -222,16 +238,14 @@ namespace BasicMatch3.Grid
             {
                 if (!levelManager.IsGridInitializing)
                 {
-                    CheckAndCreateSpecialCandy();
+                    ApplyBombCandyIfInMatchedList();
+                    CheckMatchCandiesToCreateSpecialCandy();
                 }
                 else
                 {
                     foreach (Candy candy in MatchedCandyList)
                     {
-                        var width = candy.GridX;
-                        var height = candy.GridY;
-                        Object.Destroy(candy.gameObject);
-                        candyGrid[width, height] = null;
+                        DestroyCandy(candy, candy.GridX, candy.GridY);
                     }
                 }
 
@@ -239,7 +253,7 @@ namespace BasicMatch3.Grid
             }
         }
 
-        private void CheckAndCreateSpecialCandy()
+        private void CheckMatchCandiesToCreateSpecialCandy()
         {
             var counter = 1;
             for (int i = 0; i < MatchedCandyList.Count; i++)
@@ -262,14 +276,16 @@ namespace BasicMatch3.Grid
                                     counter++;
                                     if (counter == MatchThreshold + 2)
                                     {
-                                        DestroyAndCreateSpecialCandy(i, width, height, candyPosition, candyProperties.BombCandyPrefab);
+                                        DestroyCandy(MatchedCandyList[i], width, height);
+                                        gridSpawner.CreateCandy(candyPosition, width, height, candyProperties.RainbowCandyPrefab);
                                         counter = 1;
                                         continue;
                                     }
                                 }
                             }
 
-                            DestroyAndCreateSpecialCandy(i, width, height, candyPosition, candyProperties.BombCandyPrefab);
+                            DestroyCandy(MatchedCandyList[i], width, height);
+                            gridSpawner.CreateCandy(candyPosition, width, height, candyProperties.BombCandyPrefab);
                             counter = 1;
                             continue;
                         }
@@ -280,16 +296,64 @@ namespace BasicMatch3.Grid
                     }
                 }
 
-                Object.Destroy(MatchedCandyList[i].gameObject);
+                DestroyCandy(MatchedCandyList[i], width, height);
+            }
+        }
+
+        private void DestroyCandy(Candy candy, int width, int height)
+        {
+            if (candy != null)
+            {
+                Object.Destroy(candy.gameObject);
                 candyGrid[width, height] = null;
             }
         }
 
-        private void DestroyAndCreateSpecialCandy(int i, int width, int height, Vector2 candyPosition, Candy specialCandyPrefab)
+        private void ApplyBombCandyIfInMatchedList()
         {
-            Object.Destroy(MatchedCandyList[i].gameObject);
-            candyGrid[width, height] = null;
-            gridSpawner.CreateCandy(candyPosition, width, height, specialCandyPrefab);
+            foreach (var candy in MatchedCandyList)
+            {
+                if (candy.CandyType == CandyType.Bomb)
+                {
+                    var bombCandyWidth = candy.GridX;
+                    var bombCandyHeight = candy.GridY;
+
+                    for (int width = 0; width < gridWidth; width++)
+                    {
+                        if (bombCandyWidth == width)
+                        {
+                            continue;
+                        }
+
+                        DestroyCandy(candyGrid[width, bombCandyHeight], width, bombCandyHeight);
+                    }
+
+                    for (int height = 0; height < gridHeight; height++)
+                    {
+                        if (bombCandyHeight == height)
+                        {
+                            continue;
+                        }
+
+                        DestroyCandy(candyGrid[bombCandyWidth, height], bombCandyWidth, height);
+                    }
+
+                    DestroyCandy(candy, bombCandyWidth, bombCandyHeight);
+                }
+            }
+        }
+
+        public void ApplyRainbowCandy(Candy rainbowCandy, CandyType candyType)
+        {
+            foreach (var candy in candyGrid)
+            {
+                if (candy.CandyType == candyType)
+                {
+                    DestroyCandy(candy, candy.GridX, candy.GridY);
+                }
+            }
+
+            DestroyCandy(rainbowCandy, rainbowCandy.GridX, rainbowCandy.GridY);
         }
 
         public int GetMatchedCandyCounts()

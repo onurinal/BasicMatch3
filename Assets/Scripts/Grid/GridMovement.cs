@@ -44,6 +44,14 @@ namespace BasicMatch3.Grid
 
             SwapCandies(firstCandy, secondCandy);
 
+            if (firstCandy.CandyType == CandyType.Rainbow)
+            {
+                gridChecker.ApplyRainbowCandy(firstCandy, secondCandy.CandyType);
+                yield return CoroutineHandler.Instance.StartCoroutine(levelManager.StartScanGrid());
+                swapCandyCoroutine = null;
+                yield break;
+            }
+
             var matchCount = gridChecker.GetMatchedCandyCounts();
             if (matchCount > 0)
             {
