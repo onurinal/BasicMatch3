@@ -52,7 +52,7 @@ namespace BasicMatch3.Grid
                 yield break;
             }
 
-            var matchCount = gridChecker.GetMatchedCandyCounts();
+            var matchCount = gridChecker.CheckGridAndGetMatchedCandyCounts();
             if (matchCount > 0)
             {
                 yield return CoroutineHandler.Instance.StartCoroutine(levelManager.StartScanGrid());
@@ -136,7 +136,6 @@ namespace BasicMatch3.Grid
 
         public IEnumerator StartFillCandyToEmptySlot(float moveDuration)
         {
-            // StopFillCandyToEmptySlot();
             fillCandyToEmptySlotCoroutine = FillCandyToEmptySlotCoroutine(moveDuration);
             yield return CoroutineHandler.Instance.StartCoroutine(fillCandyToEmptySlotCoroutine);
         }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using BasicMatch3.Manager;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -26,7 +25,7 @@ namespace BasicMatch3.Candies
         {
             if (CandyType != CandyType.Bomb && CandyType != CandyType.Rainbow)
             {
-                var candyNumber = Random.Range(0, candySpriteList.Count - 1);
+                var candyNumber = Random.Range(0, candySpriteList.Count);
                 candySprite.sprite = candySpriteList[candyNumber];
                 CandyType = (CandyType)candyNumber;
             }

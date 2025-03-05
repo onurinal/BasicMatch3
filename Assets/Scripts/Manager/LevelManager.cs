@@ -54,7 +54,6 @@ namespace BasicMatch3.Manager
             gridSpawner.Initialize(this, gridChecker, gridMovement, candyProperties, currentLevelProperties, candiesParent);
             playerController.Initialize(gridMovement, gridSpawner, currentLevelProperties);
 
-            // Start Level
             StartNewLevel();
         }
 
@@ -85,9 +84,8 @@ namespace BasicMatch3.Manager
 
             do
             {
-                gridChecker.CheckAllCandies();
                 gridChecker.DestroyMatchedCandies();
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(0.1f);
                 yield return gridMovement.StartFillCandyToEmptySlot(duration);
                 yield return gridSpawner.StartCreateNewCandies(duration / 3f);
                 gridChecker.CheckAllCandies();

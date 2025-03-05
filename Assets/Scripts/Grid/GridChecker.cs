@@ -9,6 +9,8 @@ namespace BasicMatch3.Grid
 {
     public class GridChecker
     {
+        private const int MatchThreshold = 3;
+
         private LevelProperties levelProperties;
         private CandyProperties candyProperties;
         private LevelManager levelManager;
@@ -17,9 +19,7 @@ namespace BasicMatch3.Grid
         private int gridWidth;
         private int gridHeight;
 
-        private IEnumerator fillCandyToEmptySlotCoroutine;
         public List<Candy> MatchedCandyList { get; } = new List<Candy>();
-        private const int MatchThreshold = 3;
 
         public void Initialize(Candy[,] candyGrid, GridSpawner gridSpawner, LevelProperties levelProperties, CandyProperties candyProperties,
             LevelManager levelManager)
@@ -63,7 +63,7 @@ namespace BasicMatch3.Grid
                     break;
                 }
 
-                if (IsCandyRainbowForHeight(width, i))
+                if (IsCandyRainbowForHeight(width, i)) // if the candy is rainbow, do not add the matched list
                 {
                     break;
                 }
@@ -143,7 +143,7 @@ namespace BasicMatch3.Grid
                     break;
                 }
 
-                if (IsCandyRainbowForWidth(i, height))
+                if (IsCandyRainbowForWidth(i, height)) // if the candy is rainbow, do not add the matched list
                 {
                     break;
                 }
@@ -213,13 +213,7 @@ namespace BasicMatch3.Grid
 
         private bool IsCandyRainbowForWidth(int width, int height)
         {
-            if (candyGrid[width, height] != null && candyGrid[width + 1, height] != null)
-            {
-                return candyGrid[width, height].CandyType == CandyType.Rainbow || candyGrid[width + 1, height].CandyType == CandyType.Rainbow;
-            }
-
-            return false;
-            // return candyGrid[width, height].CandyType == CandyType.Rainbow || candyGrid[width + 1, height].CandyType == CandyType.Rainbow;
+            return candyGrid[width, height].CandyType == CandyType.Rainbow || candyGrid[width + 1, height].CandyType == CandyType.Rainbow;
         }
 
         private void AddCandiesMatchedList(int width, int height)
@@ -292,7 +286,7 @@ namespace BasicMatch3.Grid
                     }
                     else
                     {
-                        counter = 1; // reset the counter
+                        counter = 1;
                     }
                 }
 
@@ -356,7 +350,7 @@ namespace BasicMatch3.Grid
             DestroyCandy(rainbowCandy, rainbowCandy.GridX, rainbowCandy.GridY);
         }
 
-        public int GetMatchedCandyCounts()
+        public int CheckGridAndGetMatchedCandyCounts()
         {
             CheckAllCandies();
             return MatchedCandyList.Count;

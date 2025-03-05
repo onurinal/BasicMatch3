@@ -23,9 +23,9 @@ namespace BasicMatch3.CameraManager
 
         private Vector2 CalculateCameraPosition(Vector2 gridSize)
         {
-            var newX = (gridSize.x / 2f * candyScaleFactor) - (candyScaleFactor / 2);
-            var newY = (gridSize.y / 2f * candyScaleFactor) - (candyScaleFactor / 2);
-            return new Vector2(newX, newY);
+            var newPositionX = (gridSize.x / 2f * candyScaleFactor) - (candyScaleFactor / 2);
+            var newPositionY = (gridSize.y / 2f * candyScaleFactor) - (candyScaleFactor / 2);
+            return new Vector2(newPositionX, newPositionY);
         }
     }
 }

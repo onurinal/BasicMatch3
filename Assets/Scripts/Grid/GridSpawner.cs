@@ -116,7 +116,6 @@ namespace BasicMatch3.Grid
 
         public IEnumerator StartCreateNewCandies(float spawnGapBetweenCandies)
         {
-            // StopCreateNewCandies();
             createNewCandiesCoroutine = CreateNewCandyForEmptySlotCoroutine(spawnGapBetweenCandies);
             yield return CoroutineHandler.Instance.StartCoroutine(createNewCandiesCoroutine);
         }
@@ -130,9 +129,9 @@ namespace BasicMatch3.Grid
             }
         }
 
+        // make the candies start falling at the top of the grid
         private IEnumerator FallCandiesAtStart(float spawnGapBetweenCandies)
         {
-            // make the candies start falling at the top of the grid
             for (int height = 0; height < gridHeight; height++)
             {
                 for (int width = 0; width < gridWidth; width++)
