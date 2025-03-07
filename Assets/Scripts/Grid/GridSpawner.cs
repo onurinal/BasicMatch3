@@ -102,7 +102,7 @@ namespace BasicMatch3.Grid
                             var startPosition = GetCandyWorldPosition(width, gridHeight - 1);
                             var targetPosition = GetCandyWorldPosition(width, j);
                             CreateCandy(startPosition, width, j, candyProperties.CandyPrefab);
-                            candyGrid[width, j].StartMoving(startPosition, targetPosition);
+                            candyGrid[width, j].Move(targetPosition);
                             break;
                         }
                     }
@@ -111,6 +111,7 @@ namespace BasicMatch3.Grid
                 yield return new WaitForSeconds(spawnGapBetweenCandies);
             }
 
+            yield return new WaitForSeconds(candyProperties.MoveDuration - spawnGapBetweenCandies);
             createNewCandiesCoroutine = null;
         }
 
@@ -138,7 +139,7 @@ namespace BasicMatch3.Grid
                 {
                     var startPosition = GetCandyWorldPosition(width, gridHeight - 1);
                     var targetPosition = GetCandyWorldPosition(width, height);
-                    candyGrid[width, height].StartMoving(startPosition, targetPosition);
+                    candyGrid[width, height].Move(targetPosition);
                 }
 
                 yield return new WaitForSeconds(spawnGapBetweenCandies);

@@ -38,8 +38,8 @@ namespace BasicMatch3.Grid
             var firstCandyPosition = firstCandy.transform.position;
             var secondCandyPosition = secondCandy.transform.position;
 
-            firstCandy.StartSwapping(firstCandyPosition, secondCandyPosition);
-            secondCandy.StartSwapping(secondCandyPosition, firstCandyPosition);
+            firstCandy.Move(secondCandyPosition);
+            secondCandy.Move(firstCandyPosition);
             yield return new WaitForSeconds(candyProperties.MoveDuration);
 
             SwapCandies(firstCandy, secondCandy);
@@ -64,8 +64,8 @@ namespace BasicMatch3.Grid
             var newFirstCandyPosition = firstCandy.transform.position;
             var newSecondCandyPosition = secondCandy.transform.position;
 
-            firstCandy.StartSwapping(newFirstCandyPosition, newSecondCandyPosition);
-            secondCandy.StartSwapping(newSecondCandyPosition, newFirstCandyPosition);
+            firstCandy.Move(newSecondCandyPosition);
+            secondCandy.Move(newFirstCandyPosition);
             yield return new WaitForSeconds(candyProperties.MoveDuration);
             swapCandyCoroutine = null;
         }
@@ -121,7 +121,7 @@ namespace BasicMatch3.Grid
                                 var startPosition = gridSpawner.GetCandyWorldPosition(width, i);
                                 var targetPosition = gridSpawner.GetCandyWorldPosition(width, height);
 
-                                candyGrid[width, height].StartMoving(startPosition, targetPosition);
+                                candyGrid[width, height].Move(targetPosition);
                                 candyGrid[width, i] = null;
                                 break;
                             }

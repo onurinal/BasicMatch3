@@ -298,8 +298,8 @@ namespace BasicMatch3.Grid
         {
             if (candy != null)
             {
-                Object.Destroy(candy.gameObject);
                 candyGrid[width, height] = null;
+                candy.Destroy();
             }
         }
 

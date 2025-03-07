@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using BasicMatch3.Manager;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using DG.Tweening;
 
 namespace BasicMatch3.Candies
 {
@@ -15,11 +17,10 @@ namespace BasicMatch3.Candies
         [field: SerializeField] public int GridY { get; set; }
         public SpriteRenderer CandySprite => candySprite;
 
-        private bool isFalling = false;
-        private bool isSwapping = false;
         private Vector3 targetPosition;
         private Vector3 startPosition;
-        private float elapsedTime = 0f;
+
+        private Tween moveTween, destroyTween, colorTween;
 
         public Candy Initialize(int width, int height, LevelManager levelManager)
         {
@@ -28,6 +29,10 @@ namespace BasicMatch3.Candies
                 var candyNumber = Random.Range(0, candySpriteList.Count);
                 candySprite.sprite = candySpriteList[candyNumber];
                 CandyType = (CandyType)candyNumber;
+            }
+            else
+            {
+                StartRandomColorAnimation();
             }
 
             GridX = width;
@@ -83,54 +88,31 @@ namespace BasicMatch3.Candies
             return this;
         }
 
-        private void Update()
+        private void OnDestroy()
         {
-            Move();
+            moveTween.Kill();
+            destroyTween.Kill();
+            colorTween.Kill();
         }
 
-        public void StartMoving(Vector3 startPosition, Vector3 targetPosition)
+        public void Move(Vector3 targetPosition)
         {
-            this.startPosition = startPosition;
-            this.targetPosition = targetPosition;
-            elapsedTime = 0f;
-            isSwapping = false;
-            isFalling = true;
-        }
-
-        public void StartSwapping(Vector3 startPosition, Vector3 targetPosition)
-        {
-            this.startPosition = startPosition;
-            this.targetPosition = targetPosition;
-            elapsedTime = 0f;
-            isFalling = false;
-            isSwapping = true;
-        }
-
-        private void Move()
-        {
-            if (!isFalling && !isSwapping)
-            {
-                return;
-            }
-
-            if (elapsedTime < candyProperties.MoveDuration)
-            {
-                transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / candyProperties.MoveDuration);
-                elapsedTime += Time.deltaTime;
-            }
-            else
-            {
-                transform.position = targetPosition;
-                isFalling = false;
-                isSwapping = false;
-            }
+            moveTween = transform.DOMove(targetPosition, candyProperties.MoveDuration).SetEase(Ease.InSine);
         }
 
         public void MoveToTop(Vector3 targetPosition)
         {
-            isSwapping = false;
-            isFalling = false;
             transform.position = targetPosition;
+        }
+
+        public void Destroy()
+        {
+            destroyTween = transform.DOScale(Vector2.zero, candyProperties.DestroyDuration).SetEase(Ease.InBounce).OnComplete(() => Destroy(gameObject));
+        }
+
+        private void StartRandomColorAnimation()
+        {
+            colorTween = candySprite.DOColor(new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f)), candyProperties.ColorChangeDuration).SetEase(Ease.InSine).SetLoops(-1, LoopType.Yoyo);
         }
     }
 }

@@ -10,11 +10,15 @@ namespace BasicMatch3.Candies
         [SerializeField] private Candy rainbowCandyPrefab;
         [SerializeField] private float scaleFactor;
         [SerializeField] private float moveDuration;
+        [SerializeField] private float destroyDuration;
+        [SerializeField] private float colorChangeDuration;
 
         public Candy CandyPrefab => candyPrefab;
         public Candy BombCandyPrefab => bombCandyPrefab;
         public Candy RainbowCandyPrefab => rainbowCandyPrefab;
         public float ScaleFactor => scaleFactor;
         public float MoveDuration => moveDuration;
+        public float DestroyDuration => destroyDuration;
+        public float ColorChangeDuration => colorChangeDuration;
     }
 }

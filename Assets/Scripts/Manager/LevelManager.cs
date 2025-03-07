@@ -85,7 +85,7 @@ namespace BasicMatch3.Manager
             do
             {
                 gridChecker.DestroyMatchedCandies();
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(candyProperties.DestroyDuration);
                 yield return gridMovement.StartFillCandyToEmptySlot(duration);
                 yield return gridSpawner.StartCreateNewCandies(duration / 3f);
                 gridChecker.CheckAllCandies();

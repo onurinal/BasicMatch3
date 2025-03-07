@@ -17,3 +17,5 @@ MonoBehaviour:
   rainbowCandyPrefab: {fileID: 3348470098622948437, guid: 5a6d0b8303756124da2c74d73330cfe6, type: 3}
   scaleFactor: 0.45
   moveDuration: 0.15
+  destroyDuration: 0.4
+  colorChangeDuration: 0.35
