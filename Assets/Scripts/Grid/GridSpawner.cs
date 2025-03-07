@@ -18,7 +18,6 @@ namespace BasicMatch3.Grid
         private Transform candiesParent;
         private int gridWidth, gridHeight;
 
-        private readonly List<Candy> emptyCandyList = new List<Candy>();
         private IEnumerator createNewCandiesCoroutine;
         private IEnumerator createNewGridCoroutine;
 
@@ -89,7 +88,7 @@ namespace BasicMatch3.Grid
             candyGrid[width, height] = candy.Initialize(width, height, levelManager);
         }
 
-        private IEnumerator CreateNewCandyForEmptySlotCoroutine(float spawnGapBetweenCandies)
+        private IEnumerator CreateNewCandyToEmptySlotCoroutine(float spawnGapBetweenCandies)
         {
             for (int height = 0; height < gridHeight; height++)
             {
@@ -115,56 +114,18 @@ namespace BasicMatch3.Grid
             createNewCandiesCoroutine = null;
         }
 
-        public IEnumerator StartCreateNewCandies(float spawnGapBetweenCandies)
+        public IEnumerator StartCreateNewCandiesToEmptySlot(float spawnGapBetweenCandies)
         {
-            createNewCandiesCoroutine = CreateNewCandyForEmptySlotCoroutine(spawnGapBetweenCandies);
+            createNewCandiesCoroutine = CreateNewCandyToEmptySlotCoroutine(spawnGapBetweenCandies);
             yield return CoroutineHandler.Instance.StartCoroutine(createNewCandiesCoroutine);
         }
 
-        public void StopCreateNewCandies()
+        public void StopCreateNewCandiesToEmptySlot()
         {
             if (createNewCandiesCoroutine != null)
             {
                 CoroutineHandler.Instance.StopCoroutine(createNewCandiesCoroutine);
                 createNewCandiesCoroutine = null;
-            }
-        }
-
-        // make the candies start falling at the top of the grid
-        private IEnumerator FallCandiesAtStart(float spawnGapBetweenCandies)
-        {
-            for (int height = 0; height < gridHeight; height++)
-            {
-                for (int width = 0; width < gridWidth; width++)
-                {
-                    var startPosition = GetCandyWorldPosition(width, gridHeight - 1);
-                    var targetPosition = GetCandyWorldPosition(width, height);
-                    candyGrid[width, height].Move(targetPosition);
-                }
-
-                yield return new WaitForSeconds(spawnGapBetweenCandies);
-            }
-
-            createNewGridCoroutine = null;
-        }
-
-        public IEnumerator StartCreateNewGrid(float spawnGapBetweenCandies)
-        {
-            if (createNewGridCoroutine != null)
-            {
-                yield break;
-            }
-
-            createNewGridCoroutine = FallCandiesAtStart(spawnGapBetweenCandies);
-            yield return CoroutineHandler.Instance.StartCoroutine(createNewGridCoroutine);
-        }
-
-        private void StopCreateNewGrid()
-        {
-            if (createNewGridCoroutine != null)
-            {
-                CoroutineHandler.Instance.StopCoroutine(createNewGridCoroutine);
-                createNewGridCoroutine = null;
             }
         }
 

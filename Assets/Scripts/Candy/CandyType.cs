@@ -7,7 +7,7 @@
         Biscuit,
         Donut,
         Chocolate,
-        Bomb,
-        Rainbow
+        Bomb, // has special power up
+        Rainbow // has special power up
     }
 }

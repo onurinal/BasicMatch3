@@ -14,9 +14,11 @@ namespace BasicMatch3.Grid
         private CandyProperties candyProperties;
         private LevelProperties levelProperties;
         private Candy[,] candyGrid;
+        private int gridWidth, gridHeight;
 
         private IEnumerator swapCandyCoroutine;
         private IEnumerator fillCandyToEmptySlotCoroutine;
+        private IEnumerator fallCandiesCoroutine;
 
         public void Initialize(Candy[,] candyGrid, LevelManager levelManager, GridSpawner gridSpawner, GridChecker gridChecker, CandyProperties candyProperties, LevelProperties levelProperties)
         {
@@ -26,6 +28,9 @@ namespace BasicMatch3.Grid
             this.gridChecker = gridChecker;
             this.candyProperties = candyProperties;
             this.levelProperties = levelProperties;
+
+            gridWidth = levelProperties.GridWidth;
+            gridHeight = levelProperties.GridHeight;
         }
 
         private IEnumerator SwapCandiesCoroutine(Candy firstCandy, Candy secondCandy)
@@ -44,6 +49,7 @@ namespace BasicMatch3.Grid
 
             SwapCandies(firstCandy, secondCandy);
 
+            // if player swap first candy and first candy is rainbow then apply rainbow candy power up
             if (firstCandy.CandyType == CandyType.Rainbow)
             {
                 gridChecker.ApplyRainbowCandy(firstCandy, secondCandy.CandyType);
@@ -52,6 +58,7 @@ namespace BasicMatch3.Grid
                 yield break;
             }
 
+            // after swapping candies if there is a match, then start scan grid
             var matchCount = gridChecker.CheckGridAndGetMatchedCandyCounts();
             if (matchCount > 0)
             {
@@ -60,6 +67,7 @@ namespace BasicMatch3.Grid
                 yield break;
             }
 
+            // if there is no match after swapping, make sure to go back candies previous positions
             SwapCandies(firstCandy, secondCandy);
             var newFirstCandyPosition = firstCandy.transform.position;
             var newSecondCandyPosition = secondCandy.transform.position;
@@ -102,15 +110,16 @@ namespace BasicMatch3.Grid
             }
         }
 
+        // after the matched candies destroyed, this method moves the existing candies in the grid into the remaining empty slots
         private IEnumerator FillCandyToEmptySlotCoroutine(float moveDuration)
         {
-            for (int width = 0; width < levelProperties.GridWidth; width++)
+            for (int width = 0; width < gridWidth; width++)
             {
-                for (int height = 0; height < levelProperties.GridHeight; height++)
+                for (int height = 0; height < gridHeight; height++)
                 {
                     if (candyGrid[width, height] == null)
                     {
-                        for (int i = height; i < levelProperties.GridHeight; i++)
+                        for (int i = height; i < gridHeight; i++)
                         {
                             if (candyGrid[width, i] != null)
                             {
@@ -149,15 +158,54 @@ namespace BasicMatch3.Grid
             }
         }
 
+        // Move all candies to the top without delay to make them fal smoothly at the start
         public void MoveAllCandiesToTheTop()
         {
-            for (int height = 0; height < levelProperties.GridHeight; height++)
+            for (int height = 0; height < gridHeight; height++)
             {
-                for (int width = 0; width < levelProperties.GridWidth; width++)
+                for (int width = 0; width < gridWidth; width++)
                 {
                     var targetPosition = gridSpawner.GetCandyWorldPosition(width, levelProperties.GridHeight - 1);
-                    candyGrid[width, height].MoveToTop(targetPosition);
+                    candyGrid[width, height].MoveWithNoDelay(targetPosition);
                 }
+            }
+        }
+
+        // make all candies fall from the top of the grid at the start
+        private IEnumerator FallCandiesCoroutine(float spawnGapBetweenCandies)
+        {
+            for (int height = 0; height < gridHeight; height++)
+            {
+                for (int width = 0; width < gridWidth; width++)
+                {
+                    var startPosition = gridSpawner.GetCandyWorldPosition(width, gridHeight - 1);
+                    var targetPosition = gridSpawner.GetCandyWorldPosition(width, height);
+                    candyGrid[width, height].Move(targetPosition);
+                }
+
+                yield return new WaitForSeconds(spawnGapBetweenCandies);
+            }
+
+            fallCandiesCoroutine = null;
+        }
+
+        public IEnumerator StartFallCandies(float spawnGapBetweenCandies)
+        {
+            if (fallCandiesCoroutine != null)
+            {
+                yield break;
+            }
+
+            fallCandiesCoroutine = FallCandiesCoroutine(spawnGapBetweenCandies);
+            yield return CoroutineHandler.Instance.StartCoroutine(fallCandiesCoroutine);
+        }
+
+        private void StopFallCandies()
+        {
+            if (fallCandiesCoroutine != null)
+            {
+                CoroutineHandler.Instance.StopCoroutine(fallCandiesCoroutine);
+                fallCandiesCoroutine = null;
             }
         }
     }

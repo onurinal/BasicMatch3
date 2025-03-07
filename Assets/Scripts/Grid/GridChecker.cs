@@ -230,6 +230,11 @@ namespace BasicMatch3.Grid
         {
             if (MatchedCandyList != null)
             {
+                // if the grid is generating at the start then do not spawn any special candy
+                // otherwise if matchThreshold + 1 same type candies matched then spawn bomb candy
+                // if matchThreshold + 2 same type candies matched then spawn rainbow candy
+
+                // If there is any bomb candy in matched list then first apply bomb candy effect
                 if (!levelManager.IsGridInitializing)
                 {
                     ApplyBombCandyIfInMatchedList();
@@ -298,8 +303,8 @@ namespace BasicMatch3.Grid
         {
             if (candy != null)
             {
-                candyGrid[width, height] = null;
                 candy.Destroy();
+                candyGrid[width, height] = null;
             }
         }
 

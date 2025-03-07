@@ -80,15 +80,16 @@ namespace BasicMatch3.Manager
 
         private IEnumerator ScanGridCoroutine()
         {
-            var duration = IsGridInitializing ? 0f : candyProperties.MoveDuration;
+            var moveDuration = IsGridInitializing ? 0f : candyProperties.MoveDuration;
+            var destroyDuration = IsGridInitializing ? 0f : candyProperties.DestroyDuration;
 
             do
             {
-                gridChecker.DestroyMatchedCandies();
-                yield return new WaitForSeconds(candyProperties.DestroyDuration);
-                yield return gridMovement.StartFillCandyToEmptySlot(duration);
-                yield return gridSpawner.StartCreateNewCandies(duration / 3f);
-                gridChecker.CheckAllCandies();
+                gridChecker.DestroyMatchedCandies(); // destroy matched candies
+                yield return new WaitForSeconds(destroyDuration); // wait for destroying
+                yield return gridMovement.StartFillCandyToEmptySlot(moveDuration); // after destroy filling up candies to empty slot
+                yield return gridSpawner.StartCreateNewCandiesToEmptySlot(moveDuration / 3f); //  create new candies to empty after filling up
+                gridChecker.CheckAllCandies(); // after new candies check grid again
                 yield return null;
             } while (gridChecker.MatchedCandyList.Count > 0);
         }
@@ -114,7 +115,7 @@ namespace BasicMatch3.Manager
             yield return CoroutineHandler.Instance.StartCoroutine(StartScanGrid());
             gridMovement.MoveAllCandiesToTheTop();
             gridSpawner.ShowAllCandies();
-            yield return gridSpawner.StartCreateNewGrid(candyProperties.MoveDuration / 1.5f);
+            yield return gridMovement.StartFallCandies(candyProperties.MoveDuration / 1.5f);
             IsGridInitializing = false;
             newLevelCoroutine = null;
         }
@@ -125,7 +126,7 @@ namespace BasicMatch3.Manager
         //     IsGridInitializing = false;
         //     yield return CoroutineHandler.Instance.StartCoroutine(StartScanGrid());
         //     yield return new WaitForSeconds(candyProperties.MoveDuration);
-        //     // yield return gridSpawner.StartCreateNewGrid(candyProperties.MoveDuration / 1.5f);
+        //     // yield return gridSpawner.StartFallCandies(candyProperties.MoveDuration / 1.5f);
         //     newLevelCoroutine = null;
         // }
 
