@@ -47,7 +47,7 @@ namespace BasicMatch3.Grid
             }
             else
             {
-                CreateCandiesToGrid();
+                CreateCandiesToNewGrid();
             }
 
             gridChecker.Initialize(candyGrid, this, levelProperties, candyProperties, levelManager);
@@ -59,11 +59,11 @@ namespace BasicMatch3.Grid
             candyGrid = new Candy[gridWidth, gridHeight];
         }
 
-        private void CreateCandiesToGrid()
+        private void CreateCandiesToNewGrid()
         {
-            for (int width = 0; width < gridWidth; width++)
+            for (int height = 0; height < gridHeight; height++)
             {
-                for (int height = 0; height < gridHeight; height++)
+                for (int width = 0; width < gridWidth; width++)
                 {
                     var candyPosition = GetCandyWorldPosition(width, height);
                     CreateCandy(candyPosition, width, height, candyProperties.CandyPrefab);

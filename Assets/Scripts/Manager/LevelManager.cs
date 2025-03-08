@@ -162,6 +162,7 @@ namespace BasicMatch3.Manager
             }
 
             playerPrefController.SetMasterLevel(currentLevel + 1);
+            CoroutineHandler.Instance.StopAllCoroutines();
             sceneLoader.LoadSameScene();
         }
 
@@ -175,6 +176,7 @@ namespace BasicMatch3.Manager
             }
 
             playerPrefController.SetMasterLevel(currentLevel - 1);
+            CoroutineHandler.Instance.StopAllCoroutines();
             sceneLoader.LoadSameScene();
         }
     }

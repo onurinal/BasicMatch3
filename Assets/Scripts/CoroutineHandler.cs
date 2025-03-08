@@ -6,6 +6,11 @@ public class CoroutineHandler : MonoBehaviour
 
     private void Awake()
     {
+        MakeSingleton();
+    }
+
+    private void MakeSingleton()
+    {
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);

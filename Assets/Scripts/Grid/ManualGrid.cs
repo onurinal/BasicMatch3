@@ -63,7 +63,7 @@ namespace BasicMatch3.Grid
         {
             var candy = Object.Instantiate(candyPrefab, position, Quaternion.identity);
             candy.transform.SetParent(candiesParent);
-            candyGrid[width, height] = candy.InitializeForTest(width, height, levelManager, candyType);
+            // candyGrid[width, height] = candy.InitializeForTest(width, height, levelManager, candyType);
         }
     }
 }

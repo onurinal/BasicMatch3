@@ -13,8 +13,8 @@ namespace BasicMatch3.Candies
         [SerializeField] private List<Sprite> candySpriteList;
         [SerializeField] private SpriteRenderer candySprite;
         [field: SerializeField] public CandyType CandyType { get; private set; }
-        [field: SerializeField] public int GridX { get; set; }
-        [field: SerializeField] public int GridY { get; set; }
+        [field: SerializeField] public int GridX { get; private set; }
+        [field: SerializeField] public int GridY { get; private set; }
 
         private LevelManager levelManager;
         public SpriteRenderer CandySprite => candySprite;
@@ -51,49 +51,55 @@ namespace BasicMatch3.Candies
         }
 
         // REMOVE OR DISABLE AFTER TESTING FEATURES
-        public Candy InitializeForTest(int width, int height, LevelManager levelManager, CandyType candyType)
-        {
-            this.levelManager = levelManager;
-
-            if (CandyType != CandyType.Bomb && CandyType != CandyType.Rainbow)
-            {
-                switch (candyType)
-                {
-                    case CandyType.Pasta:
-                        candySprite.sprite = candySpriteList[0];
-                        CandyType = candyType;
-                        break;
-                    case CandyType.IceCream:
-                        candySprite.sprite = candySpriteList[1];
-                        CandyType = candyType;
-                        break;
-                    case CandyType.Biscuit:
-                        candySprite.sprite = candySpriteList[2];
-                        CandyType = candyType;
-                        break;
-                    case CandyType.Donut:
-                        candySprite.sprite = candySpriteList[3];
-                        CandyType = candyType;
-                        break;
-                    case CandyType.Chocolate:
-                        candySprite.sprite = candySpriteList[4];
-                        CandyType = candyType;
-                        break;
-                }
-            }
-
-            CandyType = candyType;
-            GridX = width;
-            GridY = height;
-
-            return this;
-        }
+        // public Candy InitializeForTest(int width, int height, LevelManager levelManager, CandyType candyType)
+        // {
+        //     this.levelManager = levelManager;
+        //
+        //     if (CandyType != CandyType.Bomb && CandyType != CandyType.Rainbow)
+        //     {
+        //         switch (candyType)
+        //         {
+        //             case CandyType.Pasta:
+        //                 candySprite.sprite = candySpriteList[0];
+        //                 CandyType = candyType;
+        //                 break;
+        //             case CandyType.IceCream:
+        //                 candySprite.sprite = candySpriteList[1];
+        //                 CandyType = candyType;
+        //                 break;
+        //             case CandyType.Biscuit:
+        //                 candySprite.sprite = candySpriteList[2];
+        //                 CandyType = candyType;
+        //                 break;
+        //             case CandyType.Donut:
+        //                 candySprite.sprite = candySpriteList[3];
+        //                 CandyType = candyType;
+        //                 break;
+        //             case CandyType.Chocolate:
+        //                 candySprite.sprite = candySpriteList[4];
+        //                 CandyType = candyType;
+        //                 break;
+        //         }
+        //     }
+        //
+        //     CandyType = candyType;
+        //     GridX = width;
+        //     GridY = height;
+        //
+        //     return this;
+        // }
 
         private void OnDestroy()
         {
             moveTween.Kill();
             destroyTween.Kill();
             colorTween.Kill();
+        }
+
+        public void SetIndices(int xIndex, int yIndex)
+        {
+            GridX = xIndex;
+            GridY = yIndex;
         }
 
         public void Move(Vector3 targetPosition)

@@ -82,10 +82,8 @@ namespace BasicMatch3.Grid
         {
             var tempX = candy1.GridX;
             var tempY = candy1.GridY;
-            candy1.GridX = candy2.GridX;
-            candy1.GridY = candy2.GridY;
-            candy2.GridX = tempX;
-            candy2.GridY = tempY;
+            candy1.SetIndices(candy2.GridX, candy2.GridY);
+            candy2.SetIndices(tempX, tempY);
             candyGrid[candy1.GridX, candy1.GridY] = candy1;
             candyGrid[candy2.GridX, candy2.GridY] = candy2;
         }
@@ -123,11 +121,9 @@ namespace BasicMatch3.Grid
                         {
                             if (candyGrid[width, i] != null)
                             {
-                                candyGrid[width, i].GridX = width;
-                                candyGrid[width, i].GridY = height;
+                                candyGrid[width, i].SetIndices(width, height);
                                 candyGrid[width, height] = candyGrid[width, i];
 
-                                var startPosition = gridSpawner.GetCandyWorldPosition(width, i);
                                 var targetPosition = gridSpawner.GetCandyWorldPosition(width, height);
 
                                 candyGrid[width, height].Move(targetPosition);
@@ -178,7 +174,6 @@ namespace BasicMatch3.Grid
             {
                 for (int width = 0; width < gridWidth; width++)
                 {
-                    var startPosition = gridSpawner.GetCandyWorldPosition(width, gridHeight - 1);
                     var targetPosition = gridSpawner.GetCandyWorldPosition(width, height);
                     candyGrid[width, height].Move(targetPosition);
                 }
