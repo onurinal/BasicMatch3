@@ -6,13 +6,12 @@ using UnityEngine;
 
 namespace BasicMatch3.Grid
 {
-    public class GridMovement
+    public class GridMovement : IPlayerGridMovement
     {
         private LevelManager levelManager;
         private GridSpawner gridSpawner;
         private GridChecker gridChecker;
         private CandyProperties candyProperties;
-        private LevelProperties levelProperties;
         private Candy[,] candyGrid;
         private int gridWidth, gridHeight;
 
@@ -27,7 +26,6 @@ namespace BasicMatch3.Grid
             this.candyGrid = candyGrid;
             this.gridChecker = gridChecker;
             this.candyProperties = candyProperties;
-            this.levelProperties = levelProperties;
 
             gridWidth = levelProperties.GridWidth;
             gridHeight = levelProperties.GridHeight;
@@ -161,7 +159,7 @@ namespace BasicMatch3.Grid
             {
                 for (int width = 0; width < gridWidth; width++)
                 {
-                    var targetPosition = gridSpawner.GetCandyWorldPosition(width, levelProperties.GridHeight - 1);
+                    var targetPosition = gridSpawner.GetCandyWorldPosition(width, gridHeight - 1);
                     candyGrid[width, height].MoveWithNoDelay(targetPosition);
                 }
             }

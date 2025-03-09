@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using BasicMatch3.CameraManager;
 using BasicMatch3.Candies;
 using BasicMatch3.Grid;
@@ -19,19 +17,19 @@ namespace BasicMatch3.Manager
         [SerializeField] private CandyProperties candyProperties;
         [SerializeField] private CameraController cameraController;
         [SerializeField] private Transform candiesParent;
-
+        [SerializeField] private List<LevelProperties> levelPropertiesList;
         private GridSpawner gridSpawner;
         private GridChecker gridChecker;
         private GridMovement gridMovement;
+
         private PlayerPrefController playerPrefController;
-
-        public bool IsGridInitializing { get; private set; } = true;
-        private IEnumerator scanGridCoroutine;
-        private IEnumerator newLevelCoroutine;
-
-        [SerializeField] private List<LevelProperties> levelPropertiesList;
         private LevelProperties currentLevelProperties;
         private readonly Dictionary<int, LevelProperties> levelPropertiesDictionary = new Dictionary<int, LevelProperties>();
+
+        public bool IsGridInitializing { get; private set; } = true;
+
+        private IEnumerator scanGridCoroutine;
+        private IEnumerator newLevelCoroutine;
 
         private void OnDestroy()
         {
@@ -45,8 +43,10 @@ namespace BasicMatch3.Manager
         public void Initialize(PlayerPrefController playerPrefController)
         {
             this.playerPrefController = playerPrefController;
+
             UpdateLevelPropertiesDictionary();
             GetLevelPropertiesForCurrentLevel();
+
             cameraController.Initialize(currentLevelProperties, candyProperties.ScaleFactor);
             gridMovement = new GridMovement();
             gridChecker = new GridChecker();
@@ -112,6 +112,7 @@ namespace BasicMatch3.Manager
 
         private IEnumerator NewLevelCoroutine()
         {
+            gridSpawner.HideAllCandies();
             yield return CoroutineHandler.Instance.StartCoroutine(StartScanGrid());
             gridMovement.MoveAllCandiesToTheTop();
             gridSpawner.ShowAllCandies();

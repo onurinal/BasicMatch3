@@ -10,9 +10,6 @@ namespace BasicMatch3.Grid
     public class GridSpawner
     {
         private LevelManager levelManager;
-        private GridChecker gridChecker;
-        private GridMovement gridMovement;
-        private LevelProperties levelProperties;
         private CandyProperties candyProperties;
         private Candy[,] candyGrid;
         private Transform candiesParent;
@@ -27,11 +24,9 @@ namespace BasicMatch3.Grid
             LevelProperties levelProperties, Transform candiesParent)
         {
             this.levelManager = levelManager;
-            this.gridChecker = gridChecker;
-            this.gridMovement = gridMovement;
             this.candyProperties = candyProperties;
             this.candiesParent = candiesParent;
-            this.levelProperties = levelProperties;
+
             gridWidth = levelProperties.GridWidth;
             gridHeight = levelProperties.GridHeight;
 
@@ -39,7 +34,7 @@ namespace BasicMatch3.Grid
 
             // REMOVE OR DISABLE AFTER TESTING FEATURES
             manualGrid = new ManualGrid();
-            manualGrid.Initialize(candyGrid, this, candyProperties, levelManager, candiesParent);
+            manualGrid.Initialize(candyGrid, this, candyProperties, candiesParent);
 
             if (manualGrid.IsManualGrid)
             {
@@ -85,7 +80,7 @@ namespace BasicMatch3.Grid
         {
             var candy = Object.Instantiate(candyPrefab, position, Quaternion.identity);
             candy.transform.SetParent(candiesParent);
-            candyGrid[width, height] = candy.Initialize(width, height, levelManager);
+            candyGrid[width, height] = candy.Initialize(width, height);
         }
 
         private IEnumerator CreateNewCandyToEmptySlotCoroutine(float spawnGapBetweenCandies)
@@ -102,6 +97,11 @@ namespace BasicMatch3.Grid
                             var targetPosition = GetCandyWorldPosition(width, j);
                             CreateCandy(startPosition, width, j, candyProperties.CandyPrefab);
                             candyGrid[width, j].Move(targetPosition);
+                            if (levelManager.IsGridInitializing)
+                            {
+                                candyGrid[width, j].HideCandy();
+                            }
+
                             break;
                         }
                     }
@@ -129,6 +129,20 @@ namespace BasicMatch3.Grid
             }
         }
 
+        public void HideAllCandies()
+        {
+            for (int width = 0; width < gridWidth; width++)
+            {
+                for (int height = 0; height < gridHeight; height++)
+                {
+                    if (candyGrid[width, height] != null)
+                    {
+                        candyGrid[width, height].HideCandy();
+                    }
+                }
+            }
+        }
+
         public void ShowAllCandies()
         {
             for (int width = 0; width < gridWidth; width++)
@@ -137,7 +151,7 @@ namespace BasicMatch3.Grid
                 {
                     if (candyGrid[width, height] != null)
                     {
-                        candyGrid[width, height].CandySprite.enabled = true;
+                        candyGrid[width, height].ShowCandy();
                     }
                 }
             }

@@ -16,16 +16,10 @@ namespace BasicMatch3.Candies
         [field: SerializeField] public int GridX { get; private set; }
         [field: SerializeField] public int GridY { get; private set; }
 
-        private LevelManager levelManager;
-        public SpriteRenderer CandySprite => candySprite;
-        private Vector3 targetPosition;
-        private Vector3 startPosition;
         private Tween moveTween, destroyTween, colorTween;
 
-        public Candy Initialize(int width, int height, LevelManager levelManager)
+        public Candy Initialize(int width, int height)
         {
-            this.levelManager = levelManager;
-
             // if the candy has no special effect, then pick a random candy
             if (CandyType != CandyType.Bomb && CandyType != CandyType.Rainbow)
             {
@@ -38,22 +32,13 @@ namespace BasicMatch3.Candies
                 ChangeColorForSpecialCandy();
             }
 
-            GridX = width;
-            GridY = height;
-
-            // if the grid is being created for the new level,then make candies invisible until the grid is generated
-            if (levelManager.IsGridInitializing)
-            {
-                candySprite.enabled = false;
-            }
-
+            SetIndices(width, height);
             return this;
         }
 
         // REMOVE OR DISABLE AFTER TESTING FEATURES
-        // public Candy InitializeForTest(int width, int height, LevelManager levelManager, CandyType candyType)
+        // public Candy InitializeForTest(int width, int height, CandyType candyType)
         // {
-        //     this.levelManager = levelManager;
         //
         //     if (CandyType != CandyType.Bomb && CandyType != CandyType.Rainbow)
         //     {
@@ -112,15 +97,25 @@ namespace BasicMatch3.Candies
             transform.position = targetPosition;
         }
 
-        public void Destroy()
+        public void DestroyCandy(bool isGridInitializing)
         {
-            var duration = levelManager.IsGridInitializing ? 0 : candyProperties.DestroyDuration;
+            var duration = isGridInitializing ? 0 : candyProperties.DestroyDuration;
             destroyTween = transform.DOScale(Vector2.zero, duration).SetEase(Ease.InBounce).OnComplete(() => Destroy(gameObject));
         }
 
         private void ChangeColorForSpecialCandy()
         {
             colorTween = candySprite.DOColor(new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f)), candyProperties.ColorChangeDuration).SetEase(Ease.InSine).SetLoops(-1, LoopType.Yoyo);
+        }
+
+        public void HideCandy()
+        {
+            candySprite.enabled = false;
+        }
+
+        public void ShowCandy()
+        {
+            candySprite.enabled = true;
         }
     }
 }

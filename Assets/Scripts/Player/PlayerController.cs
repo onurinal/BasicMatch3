@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using BasicMatch3.Candies;
+﻿using BasicMatch3.Candies;
 using BasicMatch3.Grid;
 using BasicMatch3.Level;
 using UnityEngine;
@@ -12,7 +10,6 @@ namespace BasicMatch3.Player
         [SerializeField] private PlayerInput playerInput;
         [SerializeField] private LayerMask candyLayer;
 
-        private LevelProperties levelProperties;
         private GridMovement gridMovement;
         private GridSpawner gridSpawner;
         private Candy firstCandy;
@@ -22,7 +19,6 @@ namespace BasicMatch3.Player
         {
             this.gridMovement = gridMovement;
             this.gridSpawner = gridSpawner;
-            this.levelProperties = levelProperties;
             playerInput.Initialize();
 
             gridWidth = levelProperties.GridWidth;

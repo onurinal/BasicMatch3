@@ -11,7 +11,6 @@ namespace BasicMatch3.Grid
     {
         private const int MatchThreshold = 3;
 
-        private LevelProperties levelProperties;
         private CandyProperties candyProperties;
         private LevelManager levelManager;
         private GridSpawner gridSpawner;
@@ -26,7 +25,6 @@ namespace BasicMatch3.Grid
         {
             this.candyGrid = candyGrid;
             this.gridSpawner = gridSpawner;
-            this.levelProperties = levelProperties;
             this.candyProperties = candyProperties;
             this.levelManager = levelManager;
 
@@ -303,7 +301,7 @@ namespace BasicMatch3.Grid
         {
             if (candy != null)
             {
-                candy.Destroy();
+                candy.DestroyCandy(levelManager.IsGridInitializing);
                 candyGrid[width, height] = null;
             }
         }

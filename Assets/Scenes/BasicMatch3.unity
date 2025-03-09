@@ -617,6 +617,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2148185941508640698, guid: 3e6c558d33d17174ea51d2253643f7be, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2148185941508640698, guid: 3e6c558d33d17174ea51d2253643f7be, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2148185941508640698, guid: 3e6c558d33d17174ea51d2253643f7be, type: 3}
+      propertyPath: m_Color.b
+      value: 0.16981131
+      objectReference: {fileID: 0}
+    - target: {fileID: 2148185941508640698, guid: 3e6c558d33d17174ea51d2253643f7be, type: 3}
+      propertyPath: m_Color.g
+      value: 0.16981131
+      objectReference: {fileID: 0}
+    - target: {fileID: 2148185941508640698, guid: 3e6c558d33d17174ea51d2253643f7be, type: 3}
+      propertyPath: m_Color.r
+      value: 0.16981131
+      objectReference: {fileID: 0}
     - target: {fileID: 4218715194236637778, guid: 3e6c558d33d17174ea51d2253643f7be, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -665,6 +685,18 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1477374498}
+    - target: {fileID: 6654912685750911414, guid: 3e6c558d33d17174ea51d2253643f7be, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 519420031}
+    - target: {fileID: 6654912685750911414, guid: 3e6c558d33d17174ea51d2253643f7be, type: 3}
+      propertyPath: m_RenderMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8184644752801214390, guid: 3e6c558d33d17174ea51d2253643f7be, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8806973540494211429, guid: 3e6c558d33d17174ea51d2253643f7be, type: 3}
       propertyPath: m_Name
       value: UIManager

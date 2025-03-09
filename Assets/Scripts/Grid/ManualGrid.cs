@@ -6,7 +6,6 @@ namespace BasicMatch3.Grid
 {
     public class ManualGrid
     {
-        private LevelManager levelManager;
         private GridSpawner gridSpawner;
         private CandyProperties candyProperties;
         private Candy[,] candyGrid;
@@ -14,12 +13,11 @@ namespace BasicMatch3.Grid
 
         public readonly bool IsManualGrid = false;
 
-        public void Initialize(Candy[,] candyGrid, GridSpawner gridSpawner, CandyProperties candyProperties, LevelManager levelManager, Transform candiesParent)
+        public void Initialize(Candy[,] candyGrid, GridSpawner gridSpawner, CandyProperties candyProperties, Transform candiesParent)
         {
             this.gridSpawner = gridSpawner;
             this.candyGrid = candyGrid;
             this.candyProperties = candyProperties;
-            this.levelManager = levelManager;
             this.candiesParent = candiesParent;
         }
 
@@ -63,7 +61,7 @@ namespace BasicMatch3.Grid
         {
             var candy = Object.Instantiate(candyPrefab, position, Quaternion.identity);
             candy.transform.SetParent(candiesParent);
-            // candyGrid[width, height] = candy.InitializeForTest(width, height, levelManager, candyType);
+            // candyGrid[width, height] = candy.InitializeForTest(width, height, candyType);
         }
     }
 }
