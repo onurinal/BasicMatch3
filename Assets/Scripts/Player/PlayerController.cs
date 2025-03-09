@@ -10,12 +10,12 @@ namespace BasicMatch3.Player
         [SerializeField] private PlayerInput playerInput;
         [SerializeField] private LayerMask candyLayer;
 
-        private GridMovement gridMovement;
+        private IPlayerGridMovement gridMovement;
         private GridSpawner gridSpawner;
         private Candy firstCandy;
         private int gridWidth, gridHeight;
 
-        public void Initialize(GridMovement gridMovement, GridSpawner gridSpawner, LevelProperties levelProperties)
+        public void Initialize(IPlayerGridMovement gridMovement, GridSpawner gridSpawner, LevelProperties levelProperties)
         {
             this.gridMovement = gridMovement;
             this.gridSpawner = gridSpawner;
