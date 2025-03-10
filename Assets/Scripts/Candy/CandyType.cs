@@ -7,6 +7,7 @@
         Biscuit,
         Donut,
         Chocolate,
+        Pasta2,
         Bomb,
         Rainbow
     }

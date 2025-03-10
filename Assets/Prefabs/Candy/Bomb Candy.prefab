@@ -179,6 +179,6 @@ MonoBehaviour:
   candySpriteList:
   - {fileID: 21300000, guid: 3f173c33fc45dbc448160bf6c30d23b0, type: 3}
   candySprite: {fileID: 9124198284778184579}
-  <CandyType>k__BackingField: 5
+  <CandyType>k__BackingField: 6
   <GridX>k__BackingField: 0
   <GridY>k__BackingField: 0
