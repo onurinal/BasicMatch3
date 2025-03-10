@@ -61,8 +61,7 @@ namespace BasicMatch3.Manager
         {
             for (int i = 0; i < levelPropertiesList.Count; i++)
             {
-                int level = i + 1;
-                levelPropertiesDictionary.Add(level, levelPropertiesList[i]);
+                levelPropertiesDictionary.Add(i + 1, levelPropertiesList[i]);
             }
         }
 
@@ -101,7 +100,7 @@ namespace BasicMatch3.Manager
             yield return CoroutineHandler.Instance.StartCoroutine(scanGridCoroutine);
         }
 
-        private void StopScanGrid()
+        public void StopScanGrid()
         {
             if (scanGridCoroutine != null)
             {

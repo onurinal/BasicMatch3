@@ -33,7 +33,7 @@ namespace BasicMatch3.Grid
 
         private IEnumerator SwapCandiesCoroutine(Candy firstCandy, Candy secondCandy)
         {
-            if (!secondCandy)
+            if (!firstCandy || !secondCandy)
             {
                 yield break;
             }
@@ -48,13 +48,7 @@ namespace BasicMatch3.Grid
             SwapCandies(firstCandy, secondCandy);
 
             // if player swap first candy and first candy is rainbow then apply rainbow candy power up
-            if (firstCandy.CandyType == CandyType.Rainbow)
-            {
-                gridChecker.ApplyRainbowCandy(firstCandy, secondCandy.CandyType);
-                yield return CoroutineHandler.Instance.StartCoroutine(levelManager.StartScanGrid());
-                swapCandyCoroutine = null;
-                yield break;
-            }
+            if (HandleRainbowCandy(firstCandy, secondCandy)) yield break;
 
             // after swapping candies if there is a match, then start scan grid
             var matchCount = gridChecker.CheckGridAndGetMatchedCandyCounts();
@@ -106,6 +100,16 @@ namespace BasicMatch3.Grid
             }
         }
 
+        private bool HandleRainbowCandy(Candy firstCandy, Candy secondCandy)
+        {
+            if (firstCandy.CandyType != CandyType.Rainbow) return false;
+
+            gridChecker.ApplyRainbowCandy(firstCandy, secondCandy.CandyType);
+            CoroutineHandler.Instance.StartCoroutine(levelManager.StartScanGrid());
+            swapCandyCoroutine = null;
+            return true;
+        }
+
         // after the matched candies destroyed, this method moves the existing candies in the grid into the remaining empty slots
         private IEnumerator FillCandyToEmptySlotCoroutine(float moveDuration)
         {
@@ -147,7 +151,7 @@ namespace BasicMatch3.Grid
         {
             if (fillCandyToEmptySlotCoroutine != null)
             {
-                CoroutineHandler.Instance.StartCoroutine(fillCandyToEmptySlotCoroutine);
+                CoroutineHandler.Instance.StopCoroutine(fillCandyToEmptySlotCoroutine);
                 fillCandyToEmptySlotCoroutine = null;
             }
         }
@@ -160,6 +164,8 @@ namespace BasicMatch3.Grid
                 for (int width = 0; width < gridWidth; width++)
                 {
                     var targetPosition = gridSpawner.GetCandyWorldPosition(width, gridHeight - 1);
+                    // if (candyGrid[height, width] == null) return;
+
                     candyGrid[width, height].MoveWithNoDelay(targetPosition);
                 }
             }

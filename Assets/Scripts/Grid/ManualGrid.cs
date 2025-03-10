@@ -1,5 +1,4 @@
 ﻿using BasicMatch3.Candies;
-using BasicMatch3.Manager;
 using UnityEngine;
 
 namespace BasicMatch3.Grid

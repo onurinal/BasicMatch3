@@ -8,8 +8,8 @@ namespace BasicMatch3.Player
         public Vector2 MousePosition { get; private set; }
         public Vector2 TouchPosition { get; private set; }
 
-        public Vector2 FirstMousePosition { get; set; }
-        public Vector2 FirstTouchPosition { get; set; }
+        public Vector2 FirstMousePosition { get; private set; }
+        public Vector2 FirstTouchPosition { get; private set; }
 
         private Camera mainCamera;
 
@@ -23,13 +23,23 @@ namespace BasicMatch3.Player
 #if UNITY_EDITOR
             MousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
 
-#else
+#elif UNITY_ANDROID
             if (Input.touchCount > 0)
             {
                 var touch = Input.GetTouch(0);
                 TouchPosition = mainCamera.ScreenToWorldPoint(touch.position);
             }
 #endif
+        }
+
+        public void SetFirstMousePosition(Vector2 firstMousePosition)
+        {
+            FirstMousePosition = firstMousePosition;
+        }
+
+        public void SetFirstTouchPosition(Vector2 firstTouchPosition)
+        {
+            FirstTouchPosition = firstTouchPosition;
         }
     }
 }

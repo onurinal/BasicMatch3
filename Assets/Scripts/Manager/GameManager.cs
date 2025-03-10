@@ -1,5 +1,4 @@
-﻿using System;
-using PlayerSettings;
+﻿using PlayerSettings;
 using UnityEngine;
 
 namespace BasicMatch3.Manager
@@ -15,7 +14,7 @@ namespace BasicMatch3.Manager
 #if UNITY_EDITOR
             Application.targetFrameRate = 144;
 #elif UNITY_ANDROID
-            Application.targetFrameRate = 90;
+            Application.targetFrameRate = 120;
 #endif
         }
 
