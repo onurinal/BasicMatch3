@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace BasicMatch3.Manager
 {
-    public class LevelManager : MonoBehaviour
+    public class LevelManager : MonoBehaviour, ILevelGrid
     {
         [SerializeField] private SceneLoader sceneLoader;
         [SerializeField] private PlayerController playerController;

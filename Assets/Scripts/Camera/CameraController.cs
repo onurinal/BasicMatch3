@@ -7,19 +7,14 @@ namespace BasicMatch3.CameraManager
     {
         public void Initialize(LevelProperties levelProperties, float candyScaleFactor)
         {
-            UpdateCameraPosition(levelProperties, candyScaleFactor);
-        }
-
-        private void UpdateCameraPosition(LevelProperties levelProperties, float candyScaleFactor)
-        {
-            var newCameraPosition = CalculateCameraPosition(new Vector2(levelProperties.GridWidth, levelProperties.GridHeight), candyScaleFactor);
+            var newCameraPosition = CalculateCameraPosition(levelProperties.GridWidth, levelProperties.GridHeight, candyScaleFactor);
             transform.position = new Vector3(newCameraPosition.x, newCameraPosition.y, transform.position.z);
         }
 
-        private Vector2 CalculateCameraPosition(Vector2 gridSize, float candyScaleFactor)
+        private Vector2 CalculateCameraPosition(int gridWith, int gridHeight, float candyScaleFactor)
         {
-            var newPositionX = (gridSize.x / 2f * candyScaleFactor) - (candyScaleFactor / 2);
-            var newPositionY = (gridSize.y / 2f * candyScaleFactor) - (candyScaleFactor / 2);
+            var newPositionX = (gridWith / 2f * candyScaleFactor) - (candyScaleFactor / 2);
+            var newPositionY = (gridHeight / 2f * candyScaleFactor) - (candyScaleFactor / 2);
             return new Vector2(newPositionX, newPositionY);
         }
     }

@@ -1,27 +1,32 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using BasicMatch3.Candies;
 using BasicMatch3.Level;
-using BasicMatch3.Manager;
 using UnityEngine;
 
 namespace BasicMatch3.Grid
 {
     public class GridChecker
     {
+        public List<Candy> MatchedCandyList { get; } = new List<Candy>();
         private const int MatchThreshold = 3;
+        private const int BombCandyThreshold = MatchThreshold + 1;
+        private const int RainbowCandyThreshold = MatchThreshold + 2;
 
         private CandyProperties candyProperties;
-        private LevelManager levelManager;
+        private ILevelGrid levelManager;
         private GridSpawner gridSpawner;
         private Candy[,] candyGrid;
         private int gridWidth;
         private int gridHeight;
 
-        public List<Candy> MatchedCandyList { get; } = new List<Candy>();
+        private enum Direction
+        {
+            Horizontal,
+            Vertical
+        }
 
         public void Initialize(Candy[,] candyGrid, GridSpawner gridSpawner, LevelProperties levelProperties, CandyProperties candyProperties,
-            LevelManager levelManager)
+            ILevelGrid levelManager)
         {
             this.candyGrid = candyGrid;
             this.gridSpawner = gridSpawner;
@@ -38,82 +43,96 @@ namespace BasicMatch3.Grid
             {
                 for (int height = 0; height < gridHeight; height++)
                 {
-                    CheckCandiesForHeight(width, height);
-                    CheckCandiesForWidth(width, height);
+                    CheckCandiesInDirection(width, height, Direction.Vertical);
+                    CheckCandiesInDirection(width, height, Direction.Horizontal);
                 }
             }
         }
 
-        private void CheckCandiesForHeight(int width, int height)
+        private void CheckCandiesInDirection(int startX, int startY, Direction direction)
         {
+            var startIndex = direction == Direction.Horizontal ? startX : startY;
+            var gridSize = direction == Direction.Horizontal ? gridWidth : gridHeight;
             int matchCounter = 1;
-            int firstHeight = height;
 
-            for (int i = height; i < gridHeight; i++)
+            for (int i = startIndex; i < gridSize; i++)
             {
-                if (i + 1 >= gridHeight) // to fix array boundary issue
+                var secondCandyX = direction == Direction.Horizontal ? i + 1 : startX;
+                var secondCandyY = direction == Direction.Vertical ? i + 1 : startY;
+
+                if (i + 1 >= gridSize || candyGrid[startX, startY] == null || candyGrid[secondCandyX, secondCandyY] == null) // to fix array boundary issue
                 {
                     break;
                 }
 
-                if (candyGrid[width, height] == null || candyGrid[width, i + 1] == null)
+                if (IsCandyRainbow(startX, startY, secondCandyX, secondCandyY)) // if the candy is rainbow, do not add the matched list
                 {
                     break;
                 }
 
-                if (IsCandyRainbowForHeight(width, i)) // if the candy is rainbow, do not add the matched list
-                {
-                    break;
-                }
-
-                if (candyGrid[width, height].CandyType == CandyType.Bomb)
+                if (candyGrid[startX, startY].CandyType == CandyType.Bomb)
                 {
                     matchCounter++;
-                    height++;
+
+                    if (direction == Direction.Horizontal)
+                    {
+                        startX++;
+                    }
+                    else
+                    {
+                        startY++;
+                    }
+
                     if (matchCounter == MatchThreshold)
                     {
-                        for (int j = firstHeight; j < firstHeight + MatchThreshold; j++)
+                        for (int j = startIndex; j < startIndex + MatchThreshold; j++)
                         {
-                            AddCandiesMatchedList(width, j);
+                            var newX = direction == Direction.Horizontal ? j : startX;
+                            var newY = direction == Direction.Vertical ? j : startY;
+                            AddToMatchedCandies(newX, newY);
                         }
                     }
 
                     continue;
                 }
 
-                if (candyGrid[width, i + 1].CandyType == CandyType.Bomb)
+                if (candyGrid[secondCandyX, secondCandyY].CandyType == CandyType.Bomb)
                 {
                     matchCounter++;
 
                     if (matchCounter > MatchThreshold)
                     {
-                        AddCandiesMatchedList(width, i + 1);
+                        AddToMatchedCandies(secondCandyX, secondCandyY);
                     }
 
                     if (matchCounter == MatchThreshold)
                     {
-                        for (int j = firstHeight; j < firstHeight + MatchThreshold; j++)
+                        for (int j = startIndex; j < startIndex + MatchThreshold; j++)
                         {
-                            AddCandiesMatchedList(width, j);
+                            var newX = direction == Direction.Horizontal ? j : startX;
+                            var newY = direction == Direction.Vertical ? j : startY;
+                            AddToMatchedCandies(newX, newY);
                         }
                     }
 
                     continue;
                 }
 
-                if (candyGrid[width, height].CandyType == candyGrid[width, i + 1].CandyType)
+                if (candyGrid[startX, startY].CandyType == candyGrid[secondCandyX, secondCandyY].CandyType)
                 {
                     matchCounter++;
 
                     if (matchCounter > MatchThreshold)
                     {
-                        AddCandiesMatchedList(width, i + 1);
+                        AddToMatchedCandies(secondCandyX, secondCandyY);
                     }
                     else if (matchCounter == MatchThreshold)
                     {
-                        for (int j = firstHeight; j < firstHeight + MatchThreshold; j++)
+                        for (int j = startIndex; j < startIndex + MatchThreshold; j++)
                         {
-                            AddCandiesMatchedList(width, j);
+                            var newX = direction == Direction.Horizontal ? j : startX;
+                            var newY = direction == Direction.Vertical ? j : startY;
+                            AddToMatchedCandies(newX, newY);
                         }
                     }
                 }
@@ -124,104 +143,17 @@ namespace BasicMatch3.Grid
             }
         }
 
-        private void CheckCandiesForWidth(int width, int height)
+        private bool IsCandyRainbow(int firstCandyX, int firstCandyY, int secondCandyX, int secondCandyY)
         {
-            int matchCounter = 1;
-            int firstWidth = width;
+            return candyGrid[firstCandyX, firstCandyY].CandyType == CandyType.Rainbow || candyGrid[secondCandyX, secondCandyY].CandyType == CandyType.Rainbow;
+        }
 
-            for (int i = width; i < gridWidth; i++)
+        private void AddToMatchedCandies(int width, int height)
+        {
+            if (!MatchedCandyList.Contains(candyGrid[width, height]))
             {
-                if (i + 1 >= gridWidth) // to fix array boundary issue
-                {
-                    break;
-                }
-
-                if (candyGrid[width, height] == null || candyGrid[i + 1, height] == null)
-                {
-                    break;
-                }
-
-                if (IsCandyRainbowForWidth(i, height)) // if the candy is rainbow, do not add the matched list
-                {
-                    break;
-                }
-
-                if (candyGrid[width, height].CandyType == CandyType.Bomb)
-                {
-                    matchCounter++;
-                    width++;
-                    if (matchCounter == MatchThreshold)
-                    {
-                        for (int j = firstWidth; j < firstWidth + MatchThreshold; j++)
-                        {
-                            AddCandiesMatchedList(j, height);
-                        }
-                    }
-
-                    continue;
-                }
-
-                if (candyGrid[i + 1, height].CandyType == CandyType.Bomb)
-                {
-                    matchCounter++;
-
-                    if (matchCounter > MatchThreshold)
-                    {
-                        AddCandiesMatchedList(i + 1, height);
-                    }
-
-                    if (matchCounter == MatchThreshold)
-                    {
-                        for (int j = firstWidth; j < firstWidth + MatchThreshold; j++)
-                        {
-                            AddCandiesMatchedList(j, height);
-                        }
-                    }
-
-                    continue;
-                }
-
-                if (candyGrid[width, height].CandyType == candyGrid[i + 1, height].CandyType)
-                {
-                    matchCounter++;
-
-                    if (matchCounter > MatchThreshold)
-                    {
-                        AddCandiesMatchedList(i + 1, height);
-                    }
-                    else if (matchCounter == MatchThreshold)
-                    {
-                        for (int j = firstWidth; j < firstWidth + MatchThreshold; j++)
-                        {
-                            AddCandiesMatchedList(j, height);
-                        }
-                    }
-                }
-                else
-                {
-                    break;
-                }
+                MatchedCandyList.Add(candyGrid[width, height]);
             }
-        }
-
-        private bool IsCandyRainbowForHeight(int width, int height)
-        {
-            return candyGrid[width, height].CandyType == CandyType.Rainbow || candyGrid[width, height + 1].CandyType == CandyType.Rainbow;
-        }
-
-        private bool IsCandyRainbowForWidth(int width, int height)
-        {
-            return candyGrid[width, height].CandyType == CandyType.Rainbow || candyGrid[width + 1, height].CandyType == CandyType.Rainbow;
-        }
-
-        private void AddCandiesMatchedList(int width, int height)
-        {
-            if (MatchedCandyList.Contains(candyGrid[width, height]))
-            {
-                return;
-            }
-
-            MatchedCandyList.Add(candyGrid[width, height]);
         }
 
         public void DestroyMatchedCandies()
@@ -264,14 +196,14 @@ namespace BasicMatch3.Grid
                     if (MatchedCandyList[i].CandyType == MatchedCandyList[i + 1].CandyType)
                     {
                         counter++;
-                        if (counter == MatchThreshold + 1)
+                        if (counter == BombCandyThreshold)
                         {
                             if (i + 2 < MatchedCandyList.Count)
                             {
                                 if (MatchedCandyList[i].CandyType == MatchedCandyList[i + 2].CandyType)
                                 {
                                     counter++;
-                                    if (counter == MatchThreshold + 2)
+                                    if (counter == RainbowCandyThreshold)
                                     {
                                         DestroyCandy(MatchedCandyList[i], width, height);
                                         gridSpawner.CreateCandy(candyPosition, width, height, candyProperties.RainbowCandyPrefab);
@@ -299,13 +231,13 @@ namespace BasicMatch3.Grid
 
         private void DestroyCandy(Candy candy, int width, int height)
         {
-            if (candy != null)
-            {
-                candy.DestroyCandy(levelManager.IsGridInitializing);
-                candyGrid[width, height] = null;
-            }
+            if (candy == null) return;
+
+            candy.DestroyCandy(levelManager.IsGridInitializing);
+            candyGrid[width, height] = null;
         }
 
+        // bomb candy destroy entire rows and columns
         private void ApplyBombCandyIfInMatchedList()
         {
             foreach (var candy in MatchedCandyList)
@@ -344,7 +276,7 @@ namespace BasicMatch3.Grid
         {
             foreach (var candy in candyGrid)
             {
-                if (candy.CandyType == candyType)
+                if (candy != null && candy.CandyType == candyType)
                 {
                     DestroyCandy(candy, candy.GridX, candy.GridY);
                 }

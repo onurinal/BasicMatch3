@@ -1,7 +1,5 @@
-﻿using System;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using BasicMatch3.Manager;
-using UnityEngine;
 using Random = UnityEngine.Random;
 using DG.Tweening;
 
@@ -21,19 +19,29 @@ namespace BasicMatch3.Candies
         public Candy Initialize(int width, int height)
         {
             // if the candy has no special effect, then pick a random candy
-            if (CandyType != CandyType.Bomb && CandyType != CandyType.Rainbow)
+            if (IsSpecialCandy())
             {
-                var candyNumber = Random.Range(0, candySpriteList.Count);
-                candySprite.sprite = candySpriteList[candyNumber];
-                CandyType = (CandyType)candyNumber;
+                ChangeColorForSpecialCandy();
             }
             else
             {
-                ChangeColorForSpecialCandy();
+                PickRandomCandy();
             }
 
             SetIndices(width, height);
             return this;
+        }
+
+        private void PickRandomCandy()
+        {
+            var candyNumber = Random.Range(0, candySpriteList.Count);
+            candySprite.sprite = candySpriteList[candyNumber];
+            CandyType = (CandyType)candyNumber;
+        }
+
+        private bool IsSpecialCandy()
+        {
+            return CandyType == CandyType.Bomb || CandyType == CandyType.Rainbow;
         }
 
         // REMOVE OR DISABLE AFTER TESTING FEATURES
@@ -76,9 +84,9 @@ namespace BasicMatch3.Candies
 
         private void OnDestroy()
         {
-            moveTween.Kill();
-            destroyTween.Kill();
-            colorTween.Kill();
+            moveTween?.Kill();
+            destroyTween?.Kill();
+            colorTween?.Kill();
         }
 
         public void SetIndices(int xIndex, int yIndex)
@@ -105,7 +113,8 @@ namespace BasicMatch3.Candies
 
         private void ChangeColorForSpecialCandy()
         {
-            colorTween = candySprite.DOColor(new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f)), candyProperties.ColorChangeDuration).SetEase(Ease.InSine).SetLoops(-1, LoopType.Yoyo);
+            var randomColor = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
+            colorTween = candySprite.DOColor(randomColor, candyProperties.ColorChangeDuration).SetEase(Ease.InSine).SetLoops(-1, LoopType.Yoyo);
         }
 
         public void HideCandy()

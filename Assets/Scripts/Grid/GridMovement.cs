@@ -8,7 +8,7 @@ namespace BasicMatch3.Grid
 {
     public class GridMovement : IPlayerGridMovement
     {
-        private LevelManager levelManager;
+        private ILevelGrid levelManager;
         private GridSpawner gridSpawner;
         private GridChecker gridChecker;
         private CandyProperties candyProperties;
@@ -19,7 +19,7 @@ namespace BasicMatch3.Grid
         private IEnumerator fillCandyToEmptySlotCoroutine;
         private IEnumerator fallCandiesCoroutine;
 
-        public void Initialize(Candy[,] candyGrid, LevelManager levelManager, GridSpawner gridSpawner, GridChecker gridChecker, CandyProperties candyProperties, LevelProperties levelProperties)
+        public void Initialize(Candy[,] candyGrid, ILevelGrid levelManager, GridSpawner gridSpawner, GridChecker gridChecker, CandyProperties candyProperties, LevelProperties levelProperties)
         {
             this.levelManager = levelManager;
             this.gridSpawner = gridSpawner;

@@ -9,7 +9,7 @@ namespace BasicMatch3.Grid
 {
     public class GridSpawner
     {
-        private LevelManager levelManager;
+        private ILevelGrid levelManager;
         private CandyProperties candyProperties;
         private Candy[,] candyGrid;
         private Transform candiesParent;
@@ -20,7 +20,7 @@ namespace BasicMatch3.Grid
 
         private ManualGrid manualGrid; // REMOVE OR DISABLE AFTER TESTING FEATURES
 
-        public void Initialize(LevelManager levelManager, GridChecker gridChecker, GridMovement gridMovement, CandyProperties candyProperties,
+        public void Initialize(ILevelGrid levelManager, GridChecker gridChecker, GridMovement gridMovement, CandyProperties candyProperties,
             LevelProperties levelProperties, Transform candiesParent)
         {
             this.levelManager = levelManager;

@@ -5,7 +5,8 @@ namespace BasicMatch3.Candies
     [CreateAssetMenu(fileName = "Candy Properties", menuName = "Basic Match3/Create New Candy Properties")]
     public class CandyProperties : ScriptableObject
     {
-        [SerializeField] private float scaleFactor; // to find candy's world positions
+        [Tooltip("Scale factor used to determine world position of candy")]
+        [SerializeField] private float scaleFactor;
 
         [Header("Candy Prefabs")]
         [SerializeField] private Candy candyPrefab;
